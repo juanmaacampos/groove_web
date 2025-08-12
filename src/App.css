@@ -1,0 +1,28 @@
+/* Design tokens */
+:root {
+	--color-accent: #FFC07B;
+	--color-bg: #12291F;
+	--color-text: #FFFFFF;
+	--font-heading: 'PPEiko', 'PP Eiko', serif;
+	--font-body: 'EBGaramond', 'Garamond', serif;
+}
+
+/* Font faces */
+@font-face { font-family: 'PPEiko'; src: url('./assets/fonts/PP Eiko/PPEiko-Medium.otf') format('opentype'); font-weight:500; font-style:normal; font-display: swap; }
+@font-face { font-family: 'PPEiko'; src: url('./assets/fonts/PP Eiko/PPEiko-LightItalic.otf') format('opentype'); font-weight:300; font-style:italic; font-display: swap; }
+@font-face { font-family: 'PPEiko'; src: url('./assets/fonts/PP Eiko/PPEiko-Heavy.otf') format('opentype'); font-weight:700; font-style:normal; font-display: swap; }
+@font-face { font-family: 'PPEiko'; src: url('./assets/fonts/PP Eiko/PPEiko-Thin.otf') format('opentype'); font-weight:200; font-style:normal; font-display: swap; }
+
+@font-face { font-family: 'EBGaramond'; src: url('./assets/fonts/Garamond_font/EBGaramond-VariableFont_wght.ttf') format('truetype'); font-weight: 200 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'EBGaramond'; src: url('./assets/fonts/Garamond_font/EBGaramond-Italic-VariableFont_wght.ttf') format('truetype'); font-weight: 200 700; font-style: italic; font-display: swap; }
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin:0; font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); -webkit-font-smoothing: antialiased; }
+img { max-width:100%; display:block; }
+button { font: inherit; }
+::-moz-selection { background: var(--color-accent); color:#12291F; }
+::selection { background: var(--color-accent); color:#12291F; }
+
+/* Utility container if needed later */
+.container { width:100%; max-width:1200px; margin:0 auto; padding:0 1rem; }

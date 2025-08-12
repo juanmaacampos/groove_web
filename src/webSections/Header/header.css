@@ -1,0 +1,49 @@
+.site-header { position: relative; min-height: 100dvh; display:flex; align-items:flex-start; justify-content:center; background: var(--color-bg); color: var(--color-text); padding: clamp(1.2rem, 4vw, 2rem) 1rem 3rem; box-sizing:border-box; }
+
+.header-inner { position:relative; width:100%; max-width: 760px; display:flex; flex-direction:column; align-items:center; z-index:1; }
+
+.logo-wrapper { margin-bottom: 1.25rem; }
+
+.logo { width: 130px; height:auto; display:block; }
+
+@media (min-width:600px){ .logo { width:160px; } }
+
+.header-title { font-family: var(--font-heading); font-weight:700; line-height:0.9; text-align:center; margin: 1.5rem 0 2rem; color: var(--color-accent); letter-spacing:0.5px; }
+
+.header-title .line { display:block; font-size: clamp(2.4rem, 7vw, 5rem); white-space:nowrap; }
+
+@media (min-width:900px){ .header-title { margin: 1.5rem 0 2rem; } }
+
+/* Scroll suave global opcional si el navegador lo soporta */
+html { scroll-behavior: smooth; }
+
+/* CTA inferior */
+.scroll-cue {
+  position:absolute;
+  left:50%;
+  bottom:1.25rem;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction: column; /* flecha debajo del texto */
+  align-items:center;
+  justify-content:center;
+  gap:0.35rem;
+  color: var(--color-accent);
+  text-decoration:none;
+  font-family: var(--font-heading);
+  font-weight:500;
+  letter-spacing:0.5px;
+  opacity:0.9;
+  transition: opacity .2s ease, transform .2s ease;
+  text-align:center; /* centrar contenido */
+}
+.scroll-cue .text { font-size: clamp(0.9rem, 2.2vw, 1.1rem); font-weight: bold; }
+.scroll-cue .arrow { display:inline-flex; align-items:center; justify-content:center; }
+.scroll-cue:hover { opacity:1; transform:translateX(-50%) translateY(-2px); }
+
+/* Pequeño indicador animado */
+@keyframes bounceY { 0%, 100% { transform: translateY(0);} 50% { transform: translateY(4px);} }
+.scroll-cue .arrow svg { animation: bounceY 1.6s ease-in-out infinite; }
+
+/* Asegurar espacio inferior en header para que el CTA no se solape */
+.site-header { padding-bottom: clamp(3rem, 7vw, 4.5rem); }
