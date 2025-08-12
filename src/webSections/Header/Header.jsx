@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
 import HeaderBg from '../../components/headerBg/HeaderBg.jsx';
 import MenuSlider from '../../components/menuSlider/MenuSlider.jsx';
 import './header.css';
 
-export const Header = () => {
+export const Header = ({ onSelect }) => {
   return (
     <header className="site-header">
       <HeaderBg />
@@ -16,7 +16,7 @@ export const Header = () => {
           <span className="line">Nuestras</span>
           <span className="line">Especialidades</span>
         </h2>
-        <MenuSlider />
+  <MenuSlider onSelect={onSelect} />
       </div>
 
       {/* CTA inferior */}

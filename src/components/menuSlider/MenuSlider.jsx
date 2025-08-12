@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { menus } from '../Menu/MenuCard.jsx';
-import MenuCard from '../Menu/MenuCard.jsx';
+import { menus } from '../menuCard/MenuCard.jsx';
+import MenuCard from '../menuCard/MenuCard.jsx';
 import './menuSlider.css';
 
-export const MenuSlider = () => {
+export const MenuSlider = ({ onSelect }) => {
   const keys = Object.keys(menus);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [translateX, setTranslateX] = useState(0);
@@ -74,6 +74,16 @@ export const MenuSlider = () => {
     setCurrentDrag(0); // Reset drag offset
   };
 
+  useEffect(() => {
+    const trackElement = trackRef.current;
+    if (trackElement) {
+      trackElement.addEventListener('touchmove', handleDragMove, { passive: false });
+      return () => {
+        trackElement.removeEventListener('touchmove', handleDragMove);
+      };
+    }
+  }, []);
+
   return (
     <div className="menu-carousel" ref={carouselRef}>
       <div
@@ -96,7 +106,7 @@ export const MenuSlider = () => {
               className={`carousel-slide ${isActive ? 'active' : ''}`}
               ref={el => slidesRef.current[index] = el}
             >
-              <MenuCard type={key} onMore={() => console.log('Ver más', key)} />
+              <MenuCard type={key} onMore={() => onSelect && onSelect(key)} />
             </div>
           );
         })}

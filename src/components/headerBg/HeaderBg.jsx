@@ -13,7 +13,7 @@ export const HeaderBg = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 10000); // Cambia cada 10 segundos
+    }, 5000); // Cambia cada 5 segundos
 
     return () => clearInterval(interval);
   }, [images.length]);
