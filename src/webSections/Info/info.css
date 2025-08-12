@@ -45,3 +45,31 @@
 @media (min-width: 900px) {
   .map-card iframe { min-height: 420px; }
 }
+
+/* ====== Entrance animations on scroll ====== */
+@keyframes infoUpFade {
+  from { transform: translateY(22px); opacity: 0; filter: blur(4px); }
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+
+/* Initial states */
+.info-section[data-entered="false"] .info__header { opacity: 0; transform: translateY(16px); filter: blur(2px); }
+.info-section[data-entered="false"] .info__details > .info-item { opacity: 0; transform: translateY(20px); filter: blur(3px); }
+.info-section[data-entered="false"] .map-card { opacity: 0; transform: translateY(24px) scale(.98); filter: blur(3px); }
+
+/* Play on enter with gentle stagger */
+.info-section[data-entered="true"] .info__header { animation: infoUpFade .7s ease-out both; }
+.info-section[data-entered="true"] .info__details > .info-item { animation: infoUpFade .7s ease-out both; }
+.info-section[data-entered="true"] .info__details > .info-item:nth-child(1) { animation-delay: .05s; }
+.info-section[data-entered="true"] .info__details > .info-item:nth-child(2) { animation-delay: .12s; }
+.info-section[data-entered="true"] .info__details > .info-item:nth-child(3) { animation-delay: .19s; }
+.info-section[data-entered="true"] .info__details > .info-item:nth-child(4) { animation-delay: .26s; }
+.info-section[data-entered="true"] .map-card { animation: infoUpFade .7s .18s ease-out both; }
+
+/* Reduced motion: no animation, ensure visible */
+@media (prefers-reduced-motion: reduce) {
+  .info-section * { animation: none !important; transition: none !important; }
+  .info-section[data-entered="false"] .info__header,
+  .info-section[data-entered="false"] .info__details > .info-item,
+  .info-section[data-entered="false"] .map-card { opacity: 1; transform: none; filter: none; }
+}

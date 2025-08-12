@@ -53,3 +53,47 @@ html { scroll-behavior: smooth; }
 .header-title__top { display:block; font-size: clamp(3rem, 9vw, 6.2rem); }
 .header-title__bottom { display:block; font-size: clamp(2.4rem, 8.5vw, 5.8rem); }
 .header-title__bottom .tw-wrapper { font-size: inherit; }
+
+/* ============ Entrance animations ============ */
+@keyframes slideUpFade {
+  from { transform: translateY(24px); opacity: 0; filter: blur(4px); }
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; filter: blur(3px); }
+  60% { transform: scale(1.02); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1); }
+}
+
+/* initial states */
+.site-header[data-entered="false"] .logo { opacity: 0; transform: translateY(20px) scale(0.96); filter: blur(2px); }
+.site-header[data-entered="false"] .header-title__top { opacity: 0; transform: translateY(20px); filter: blur(3px); }
+.site-header[data-entered="false"] .header-title__bottom { opacity: 0; transform: translateY(20px); filter: blur(3px); }
+.site-header[data-entered="false"] .menu-carousel { opacity: 0; transform: translateY(24px); }
+.site-header[data-entered="false"] .scroll-cue { opacity: 0; transform: translate(-50%, 12px); }
+
+/* play on enter */
+.site-header[data-entered="true"] .logo { animation: popIn .7s cubic-bezier(.2,.8,.2,1) both; }
+.site-header[data-entered="true"] .header-title__top { animation: slideUpFade .7s .08s cubic-bezier(.2,.8,.2,1) both; }
+.site-header[data-entered="true"] .header-title__bottom { animation: slideUpFade .7s .18s cubic-bezier(.2,.8,.2,1) both; }
+.site-header[data-entered="true"] .menu-carousel { animation: slideUpFade .7s .28s cubic-bezier(.2,.8,.2,1) both; }
+.site-header[data-entered="true"] .scroll-cue { animation: scrollCueIn .7s .5s ease-out both; }
+
+@keyframes scrollCueIn {
+  from { transform: translate(-50%, 24px); opacity: 0; filter: blur(2px); }
+  to { transform: translate(-50%, 0); opacity: 1; filter: blur(0); }
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .site-header [style],
+  .site-header * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .site-header[data-entered="false"] .logo,
+  .site-header[data-entered="false"] .header-title__top,
+  .site-header[data-entered="false"] .header-title__bottom,
+  .site-header[data-entered="false"] .menu-carousel,
+  .site-header[data-entered="false"] .scroll-cue { opacity: 1; transform: none; filter: none; }
+  /* Keep CTA centered even with reduced motion */
+  .site-header[data-entered="false"] .scroll-cue { transform: translateX(-50%); }
+}

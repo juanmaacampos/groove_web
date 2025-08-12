@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './info.css';
 import { FaMapMarkerAlt, FaWhatsapp, FaInstagram, FaClock } from 'react-icons/fa';
 import { WHATSAPP_LINK, WHATSAPP_DISPLAY, INSTAGRAM_CAFE, INSTAGRAM_PAN } from '../../config/socials.js';
@@ -7,8 +7,37 @@ const MAP_QUERY = encodeURIComponent('Av. Int. Jorge Ruben Varela 512, B7223 Cam
 const MAP_EMBED = `https://www.google.com/maps?q=${MAP_QUERY}&output=embed`;
 
 const Info = () => {
+  const sectionRef = useRef(null);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return undefined;
+
+    // Trigger once when 20% of the section is visible
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setEntered(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { root: null, threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <section id="info" className="info-section" aria-label="Información de contacto y ubicación">
+    <section
+      id="info"
+      className="info-section"
+      aria-label="Información de contacto y ubicación"
+      ref={sectionRef}
+      data-entered={entered ? 'true' : 'false'}
+    >
       <div className="info__inner">
         <div className="info__header">
           <h2 className="info__title">Encontranos</h2>

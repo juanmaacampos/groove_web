@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
 import HeaderBg from '../../components/headerBg/HeaderBg.jsx';
 import MenuSlider from '../../components/menuSlider/MenuSlider.jsx';
@@ -6,8 +6,15 @@ import Typewriter from '../../components/Typewriter/Typewriter.jsx';
 import './header.css';
 
 export const Header = ({ onSelect }) => {
+  // Trigger entrance animations once mounted
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className="site-header" data-entered={entered ? 'true' : 'false'}>
       <HeaderBg />
       <div className="header-inner">
         <div className="logo-wrapper">

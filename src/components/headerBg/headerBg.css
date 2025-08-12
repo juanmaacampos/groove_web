@@ -5,4 +5,13 @@
 .header-bg .layer2 { top: 20%; right: -25%; }
 .header-bg .layer3 { bottom: -15%; left: -10%; }
 .header-bg .layer4 { bottom: -20%; right: -15%; }
-.header-bg .bg-overlay { position:absolute; inset:0; background:radial-gradient(circle at 60% 40%, rgba(255,192,123,0.12), rgba(18,41,31,0.9)); backdrop-filter: blur(4px); }
+.header-bg .bg-overlay { position:absolute; inset:0; background:radial-gradient(circle at 60% 40%, rgba(255,192,123,0.12), rgba(18,41,31,0.9)); backdrop-filter: blur(4px); opacity:0; animation: bgOverlayIn .8s .15s ease-out forwards; }
+
+@keyframes bgOverlayIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.header-bg .bg-overlay { animation: none; opacity: 1; }
+}

@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react-swc'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: 'https://juanmaacampos.github.io/groove_web'
+  base: '/groove_web/'
 })
