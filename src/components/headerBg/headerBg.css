@@ -1,5 +1,5 @@
 .header-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
-.header-bg .bg-layer { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: blur(2px) saturate(1.2) brightness(0.9); opacity: 0; transition: opacity 1s ease-in-out; }
+.header-bg .bg-layer { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: blur(0.1px) saturate(1.2) brightness(0.9); opacity: 0; transition: opacity 1s ease-in-out; }
 .header-bg .bg-layer.active { opacity: 0.25; }
 .header-bg .layer1 { top: -10%; left: -20%; }
 .header-bg .layer2 { top: 20%; right: -25%; }

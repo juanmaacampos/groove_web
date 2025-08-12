@@ -1,0 +1,6 @@
+.tw-wrapper { display:inline-flex; align-items:baseline; gap:0.35ch; color: var(--color-accent); font-family: var(--font-heading); font-weight:700; }
+.tw-prefix { opacity: 0.95; }
+.tw-typing { position: relative; display:inline-flex; align-items:baseline; }
+.tw-text { display:inline-block; white-space:nowrap; }
+.tw-caret { width: 2px; height: 1em; background: currentColor; display:inline-block; margin-left: 2px; opacity: 0; transition: opacity .2s ease; }
+.tw-caret.visible { opacity: 1; }

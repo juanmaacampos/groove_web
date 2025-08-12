@@ -2,6 +2,7 @@ import React from 'react';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
 import HeaderBg from '../../components/headerBg/HeaderBg.jsx';
 import MenuSlider from '../../components/menuSlider/MenuSlider.jsx';
+import Typewriter from '../../components/Typewriter/Typewriter.jsx';
 import './header.css';
 
 export const Header = ({ onSelect }) => {
@@ -12,9 +13,20 @@ export const Header = ({ onSelect }) => {
         <div className="logo-wrapper">
           <img src={GrooveLogo} alt="Groove Cafe" className="logo" />
         </div>
-        <h2 className="header-title">
-          <span className="line">Nuestras</span>
-          <span className="line">Especialidades</span>
+        <h2 className="header-title header-title--stack" aria-live="polite">
+          <span className="header-title__top">Nuestros</span>
+          <span className="header-title__bottom">
+            <Typewriter
+              prefix=""
+              words={[
+                'cocteles',
+                'cafés',
+                'desayunos',
+                'almuerzos',
+                'tragos',
+              ]}
+            />
+          </span>
         </h2>
   <MenuSlider onSelect={onSelect} />
       </div>

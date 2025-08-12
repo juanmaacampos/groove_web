@@ -29,7 +29,7 @@ export const MenuCard = ({ type, onMore }) => {
       {data.icon} {/* Displaying the specific icon */}
       <h2>{data.title}</h2>
       <p>{data.desc}</p>
-      <button onClick={onMore}>Ver más</button>
+      <button onClick={onMore}>Ver Menú</button>
     </div>
   );
 };
