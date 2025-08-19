@@ -5,17 +5,19 @@ import MenuDropdown from './webSections/menuDropdown/MenuDropdown.jsx';
 import BodyAds from './webSections/bodyAds/BodyAds.jsx';
 import Footer from './webSections/Footer/Footer.jsx';
 import Info from './webSections/Info/Info.jsx';
+import FirebaseProvider from './firebase/FirebaseProvider.jsx';
 
 function App() {
   const [selectedMenu, setSelectedMenu] = useState(null);
+  
   return (
-    <>
+    <FirebaseProvider>
       <Header onSelect={setSelectedMenu} />
       {selectedMenu && <MenuDropdown menuType={selectedMenu} />}
       <BodyAds />
-  <Info />
+      <Info />
       <Footer />
-    </>
+    </FirebaseProvider>
   );
 }
 

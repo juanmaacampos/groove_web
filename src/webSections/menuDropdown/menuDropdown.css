@@ -139,6 +139,72 @@
   font-size: 14px;
 }
 
+/* Estados de carga y error */
+.loading-state, .error-state, .empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--md-muted);
+}
+
+.loading-state p {
+  font-size: 18px;
+  margin: 0;
+  animation: pulse 2s infinite;
+}
+
+.error-state p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.error-state p:first-child {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+/* Indicadores de stock */
+.md-item-stock {
+  margin-top: 4px;
+}
+
+.stock-indicator {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.stock-indicator.normal {
+  background: rgba(72, 187, 120, 0.2);
+  color: #48bb78;
+}
+
+.stock-indicator.low {
+  background: rgba(237, 137, 54, 0.2);
+  color: #ed8936;
+}
+
+.stock-indicator.out {
+  background: rgba(245, 101, 101, 0.2);
+  color: #f56565;
+}
+
+/* Animación para estados de carga */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @media (min-width: 720px) {
   .md-items {
     grid-template-columns: 1fr 1fr;

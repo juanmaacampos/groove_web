@@ -70,3 +70,21 @@
     width: 320px;
   }
 }
+
+/* Loading y Error States */
+.carousel-loading,
+.carousel-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.carousel-loading p,
+.carousel-error p {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  opacity: 0.8;
+}

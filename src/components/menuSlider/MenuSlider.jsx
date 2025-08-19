@@ -1,15 +1,36 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { menus } from '../menuCard/MenuCard.jsx';
 import MenuCard from '../menuCard/MenuCard.jsx';
+import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
+import { useGrooveMenus } from '../../utils/menuMapper.js';
 import './menuSlider.css';
 
 export const MenuSlider = ({ onSelect }) => {
-  const keys = Object.keys(menus);
+  const { menuSDK, isInitialized } = useFirebase();
+  const { grooveMenus, loading, error } = useGrooveMenus(menuSDK);
+  
+  // Estados siempre declarados al inicio
   const [currentIndex, setCurrentIndex] = useState(0);
   const [translateX, setTranslateX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState(0);
+  const [currentDrag, setCurrentDrag] = useState(0);
+  
+  // Referencias siempre declaradas al inicio
   const trackRef = useRef(null);
   const slidesRef = useRef([]);
   const carouselRef = useRef(null);
+  
+  // Obtener las keys de los menús disponibles (dinámico desde Firebase)
+  const keys = Object.keys(grooveMenus);
+  
+  console.log('🎬 MenuSlider render:', { 
+    isInitialized, 
+    loading, 
+    error, 
+    menuSDKExists: !!menuSDK, 
+    keysLength: keys.length,
+    grooveMenus 
+  });
 
   // Calculate and set the translation to center the active slide
   const centerActiveSlide = useCallback(() => {
@@ -33,10 +54,6 @@ export const MenuSlider = ({ onSelect }) => {
   }, [centerActiveSlide]);
 
   // --- Swipe Logic ---
-  const [isDragging, setIsDragging] = useState(false);
-  const [startPos, setStartPos] = useState(0);
-  const [currentDrag, setCurrentDrag] = useState(0);
-
   const handleDragStart = (e) => {
     setIsDragging(true);
     setStartPos(e.touches ? e.touches[0].clientX : e.clientX);
@@ -84,6 +101,47 @@ export const MenuSlider = ({ onSelect }) => {
     }
   }, []);
 
+  // Estados condicionales DESPUÉS de todos los hooks
+  if (!isInitialized) {
+    return (
+      <div className="menu-carousel">
+        <div className="carousel-loading">
+          <p>🔥 Conectando con Firebase...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="menu-carousel">
+        <div className="carousel-loading">
+          <p>📋 Cargando menús...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="menu-carousel">
+        <div className="carousel-error">
+          <p>❌ Error cargando menús: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (keys.length === 0) {
+    return (
+      <div className="menu-carousel">
+        <div className="carousel-loading">
+          <p>📭 No hay menús disponibles</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="menu-carousel" ref={carouselRef}>
       <div
@@ -106,7 +164,7 @@ export const MenuSlider = ({ onSelect }) => {
               className={`carousel-slide ${isActive ? 'active' : ''}`}
               ref={el => slidesRef.current[index] = el}
             >
-              <MenuCard type={key} onMore={() => onSelect && onSelect(key)} />
+              <MenuCard type={key} menuData={grooveMenus[key]} onMore={() => onSelect && onSelect(key)} />
             </div>
           );
         })}
