@@ -2,17 +2,11 @@ import React, { useMemo, useState, useEffect, useRef } from 'react';
 import './menuDropdown.css';
 import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
 import { useGrooveMenus, useMenuCategories } from '../../utils/menuMapper.js';
-import headerImg1 from '../../assets/img/header_img_1.png';
-import headerImg2 from '../../assets/img/header_img_2.png';
-import headerImg3 from '../../assets/img/header_img_3.png';
-import headerImg4 from '../../assets/img/header_img_4.png';
-
-// Imágenes por defecto para fallback
-const defaultImages = [headerImg1, headerImg2, headerImg3, headerImg4];
+import grooveLogo from '/Groove_logo.svg';
 
 // Función para obtener imagen por defecto si no hay imagen en Firebase
-const getDefaultImage = (index = 0) => {
-  return defaultImages[index % defaultImages.length];
+const getDefaultImage = () => {
+  return grooveLogo;
 };
 
 const Category = ({ cat, open, onToggle }) => {
@@ -32,10 +26,12 @@ const Category = ({ cat, open, onToggle }) => {
             <li key={item.id} className="md-item">
               <div className="md-item-media">
                 <img 
-                  src={item.img || getDefaultImage(index)} 
+                  src={item.img || getDefaultImage()} 
                   alt={item.name}
+                  className={!item.img ? 'placeholder' : ''}
                   onError={(e) => {
-                    e.target.src = getDefaultImage(index);
+                    e.target.src = getDefaultImage();
+                    e.target.className = 'placeholder';
                   }}
                 />
               </div>

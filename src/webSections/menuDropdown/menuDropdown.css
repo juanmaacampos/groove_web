@@ -126,6 +126,13 @@
   border-radius: 10px;
 }
 
+.md-item-media img.placeholder {
+  object-fit: contain;
+  object-position: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .md-item-body {
   display: grid;
   gap: 6px;
