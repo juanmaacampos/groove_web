@@ -106,7 +106,7 @@ export const MenuSlider = ({ onSelect }) => {
     return (
       <div className="menu-carousel">
         <div className="carousel-loading">
-          <p>🔥 Conectando con Firebase...</p>
+          <div className="simple-loader"></div>
         </div>
       </div>
     );
@@ -116,7 +116,7 @@ export const MenuSlider = ({ onSelect }) => {
     return (
       <div className="menu-carousel">
         <div className="carousel-loading">
-          <p>📋 Cargando menús...</p>
+          <div className="simple-loader"></div>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export const MenuSlider = ({ onSelect }) => {
     return (
       <div className="menu-carousel">
         <div className="carousel-error">
-          <p>❌ Error cargando menús: {error}</p>
+          <p>Error cargando menús: {error}</p>
         </div>
       </div>
     );
@@ -136,7 +136,7 @@ export const MenuSlider = ({ onSelect }) => {
     return (
       <div className="menu-carousel">
         <div className="carousel-loading">
-          <p>📭 No hay menús disponibles</p>
+          <div className="simple-loader"></div>
         </div>
       </div>
     );
