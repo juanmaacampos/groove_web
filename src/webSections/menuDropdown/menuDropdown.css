@@ -70,6 +70,22 @@
 
 .md-cat-arrow {
   transition: transform .25s ease;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-accent, #FFC07B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 192, 123, 0.1);
+  border: 1px solid rgba(255, 192, 123, 0.2);
+}
+
+.md-cat-arrow svg {
+  width: 20px;
+  height: 20px;
 }
 
 .md-cat.open .md-cat-arrow {
@@ -144,12 +160,32 @@
   text-align: center;
   padding: 64px 24px;
   color: var(--md-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .loading-state p {
   font-size: 18px;
   margin: 0;
   animation: pulse 2s infinite;
+}
+
+/* Simple Page Loader */
+.simple-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--color-accent, #FFC07B);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error-state p {

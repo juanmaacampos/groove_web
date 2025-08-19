@@ -20,7 +20,11 @@ const Category = ({ cat, open, onToggle }) => {
     <div className={`md-cat ${open ? 'open' : ''}`}>
       <button className="md-cat-header" onClick={() => onToggle(cat.id)} aria-expanded={open}>
         <span className="md-cat-name">{cat.name}</span>
-        <span className="md-cat-arrow" aria-hidden>▾</span>
+        <span className="md-cat-arrow" aria-hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
       </button>
       <div className="md-cat-panel" style={{ maxHeight: open ? `${cat.items.length * 128 + 24}px` : 0 }}>
         <ul className="md-items">
@@ -96,7 +100,7 @@ export const MenuDropdown = ({ menuType }) => {
       <section className="menu-dropdown">
         <div className="md-container">
           <div className="loading-state">
-            <p>🔥 Inicializando Firebase...</p>
+            <div className="simple-loader"></div>
           </div>
         </div>
       </section>
@@ -121,7 +125,7 @@ export const MenuDropdown = ({ menuType }) => {
       <section className="menu-dropdown">
         <div className="md-container">
           <div className="loading-state">
-            <p>📋 Cargando menú...</p>
+            <div className="simple-loader"></div>
           </div>
         </div>
       </section>

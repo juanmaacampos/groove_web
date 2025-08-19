@@ -33,7 +33,7 @@ const getMenuIcon = (menuName) => {
   if (name.includes('café') || name.includes('desayuno') || name.includes('breakfast')) {
     return <FaCoffee className="menu-icon" />;
   }
-  if (name.includes('bebida') || name.includes('cóctel') || name.includes('cocktail') || name.includes('bar')) {
+  if (name.includes('bebida') || name.includes('Coctelería') || name.includes('cocktail') || name.includes('bar')) {
     return <FaCocktail className="menu-icon" />;
   }
   if (name.includes('pizza')) {
