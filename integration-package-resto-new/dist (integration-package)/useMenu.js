@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 
-/**
- * 🍽️ HOOKS PARA GROOVE - Gestión de menús con Firebase
- */
-
-/**
- * 📋 Hook principal para usar el menú
- */
+// Hook principal para usar el menú
 export function useMenu(menuSDK) {
   const [business, setBusiness] = useState(null);
   const [restaurant, setRestaurant] = useState(null); // Mantener para compatibilidad
@@ -15,31 +9,19 @@ export function useMenu(menuSDK) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!menuSDK) return;
-
-    let unsubscribeBusinessInfo = null;
-
     async function loadData() {
       try {
         setLoading(true);
         setError(null);
         
-        // Cargar menú una vez
-        const menuData = await menuSDK.getFullMenu();
+        const [businessData, menuData] = await Promise.all([
+          menuSDK.getBusinessInfo(),
+          menuSDK.getFullMenu()
+        ]);
+        
+        setBusiness(businessData);
+        setRestaurant(businessData); // Para compatibilidad con código existente
         setMenu(menuData);
-
-        // Configurar listener en tiempo real para información del negocio
-        unsubscribeBusinessInfo = menuSDK.onBusinessInfoChange((businessData, error) => {
-          if (error) {
-            console.error('Error in business listener:', error);
-            setError(error.message);
-            return;
-          }
-          
-          setBusiness(businessData);
-          setRestaurant(businessData); // Para compatibilidad
-        });
-
       } catch (err) {
         setError(err.message);
         console.error('Error loading menu:', err);
@@ -48,14 +30,9 @@ export function useMenu(menuSDK) {
       }
     }
 
-    loadData();
-
-    // Cleanup function
-    return () => {
-      if (unsubscribeBusinessInfo) {
-        unsubscribeBusinessInfo();
-      }
-    };
+    if (menuSDK) {
+      loadData();
+    }
   }, [menuSDK]);
 
   return { 
@@ -67,9 +44,7 @@ export function useMenu(menuSDK) {
   };
 }
 
-/**
- * 🛒 Hook para manejar carrito
- */
+// Hook para manejar carrito
 export function useCart() {
   const [cart, setCart] = useState([]);
 
@@ -83,14 +58,14 @@ export function useCart() {
         
         // Verificar si hay suficiente stock
         if (newTotalQuantity > item.stock) {
-          alert(`Solo hay ${item.stock} unidades disponibles de ${item.name}`);
+          alert(`Stock insuficiente. Solo quedan ${item.stock} unidades disponibles.`);
           return prev;
         }
         
         if (existing) {
           return prev.map(cartItem =>
             cartItem.id === item.id
-              ? { ...cartItem, quantity: cartItem.quantity + quantity }
+              ? { ...cartItem, quantity: newTotalQuantity }
               : cartItem
           );
         }
@@ -127,8 +102,8 @@ export function useCart() {
         if (item.id === itemId) {
           // Verificar stock si el item tiene control de stock
           if (item.trackStock && typeof item.stock === 'number' && quantity > item.stock) {
-            alert(`Solo hay ${item.stock} unidades disponibles de ${item.name}`);
-            return item;
+            alert(`Stock insuficiente. Solo quedan ${item.stock} unidades disponibles.`);
+            return item; // No actualizar la cantidad
           }
           return { ...item, quantity };
         }
@@ -155,9 +130,7 @@ export function useCart() {
   };
 }
 
-/**
- * ⭐ Hook para solo platos destacados
- */
+// Hook para solo platos destacados
 export function useFeaturedItems(menuSDK) {
   const [featuredItems, setFeaturedItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -185,9 +158,7 @@ export function useFeaturedItems(menuSDK) {
   return { featuredItems, loading, error };
 }
 
-/**
- * 🏢 Hook para terminología dinámica basada en el tipo de negocio
- */
+// Hook para terminología dinámica basada en el tipo de negocio
 export function useBusinessTerminology(businessType) {
   const [terminology, setTerminology] = useState({});
 
@@ -205,24 +176,25 @@ export function useBusinessTerminology(businessType) {
           itemSingular: 'producto',
           items: 'productos',
           categoryType: 'categoría',
-          orderType: 'carrito',
-          orderTypeCapitalized: 'Carrito',
+          orderType: 'orden de compra',
+          orderTypeCapitalized: 'Orden de Compra',
           addToCart: 'Agregar al Carrito',
           viewCatalog: 'Ver Catálogo',
           viewProducts: 'Ver Productos',
           featuredProducts: 'Productos Destacados',
           allProducts: 'Todos los Productos',
           productDetails: 'Detalles del Producto',
-          orderSummary: 'Resumen del Carrito',
-          placeOrder: 'Realizar Compra',
+          orderSummary: 'Resumen de Compra',
+          placeOrder: 'Realizar Pedido',
           serviceOptions: {
+            delivery: 'Envío a domicilio',
             pickup: 'Retiro en tienda',
-            delivery: 'Envío a domicilio'
+            shipping: 'Envío postal'
           }
         };
       }
 
-      // Default: restaurant terminology para Groove
+      // Default: restaurant terminology
       return {
         businessName: 'Restaurante',
         menuName: 'menú',
@@ -258,9 +230,7 @@ export function useBusinessTerminology(businessType) {
   return terminology;
 }
 
-/**
- * 🔄 Hook combinado que incluye terminología
- */
+// Hook combinado que incluye terminología
 export function useMenuWithTerminology(menuSDK) {
   const menuData = useMenu(menuSDK);
   const terminology = useBusinessTerminology(menuData.business?.businessType);
@@ -268,94 +238,5 @@ export function useMenuWithTerminology(menuSDK) {
   return {
     ...menuData,
     terminology
-  };
-}
-
-/**
- * 📢 Hook para gestionar anuncios activos
- * Obtiene anuncios desde Firebase con actualizaciones en tiempo real
- * @param {MenuSDK} menuSDK - Instancia del SDK de menús
- * @returns {Object} - { announcements, loading, error, refresh }
- */
-export function useAnnouncements(menuSDK) {
-  const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!menuSDK) {
-      setLoading(false);
-      return;
-    }
-
-    let unsubscribe = null;
-
-    const setupSubscription = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Verificar si el SDK tiene el método para anuncios
-        if (typeof menuSDK.subscribeToAnnouncements === 'function') {
-          console.log('📢 useAnnouncements: Setting up real-time subscription...');
-          
-          unsubscribe = menuSDK.subscribeToAnnouncements((announcementsData) => {
-            console.log('📢 useAnnouncements: Real-time update:', announcementsData.length, 'announcements');
-            setAnnouncements(announcementsData || []);
-            setLoading(false);
-            setError(null);
-          });
-        } else if (typeof menuSDK.getAnnouncements === 'function') {
-          // Fallback: carga única sin tiempo real
-          console.log('📢 useAnnouncements: Fetching announcements (one-time)...');
-          const announcementsData = await menuSDK.getAnnouncements();
-          setAnnouncements(announcementsData || []);
-          setLoading(false);
-        } else {
-          // El SDK no tiene soporte para anuncios
-          console.warn('📢 useAnnouncements: SDK does not support announcements');
-          setAnnouncements([]);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error('❌ useAnnouncements error:', err);
-        setError(err.message);
-        setAnnouncements([]);
-        setLoading(false);
-      }
-    };
-
-    setupSubscription();
-
-    return () => {
-      if (unsubscribe && typeof unsubscribe === 'function') {
-        console.log('🔌 useAnnouncements: Cleaning up subscription');
-        unsubscribe();
-      }
-    };
-  }, [menuSDK]);
-
-  const refresh = async () => {
-    if (!menuSDK || typeof menuSDK.getAnnouncements !== 'function') return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const announcementsData = await menuSDK.getAnnouncements();
-      setAnnouncements(announcementsData || []);
-    } catch (err) {
-      console.error('❌ useAnnouncements refresh error:', err);
-      setError(err.message);
-      setAnnouncements([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return {
-    announcements,
-    loading,
-    error,
-    refresh
   };
 }

@@ -340,6 +340,101 @@ export class MenuSDK {
 
     return validation;
   }
+
+  /**
+   * 📢 Obtiene anuncios activos del negocio
+   * @returns {Promise<Array>} Lista de anuncios activos
+   */
+  async getAnnouncements() {
+    try {
+      console.log('📢 MenuSDK: Fetching announcements for business:', this.businessId);
+      
+      const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+      const q = query(
+        announcementsRef,
+        where('isActive', '==', true),
+        orderBy('createdAt', 'desc'),
+        limit(10)
+      );
+      
+      const snapshot = await getDocs(q);
+      const announcements = [];
+      
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        console.log('📄 Raw announcement data:', doc.id, data);
+        announcements.push({
+          id: doc.id,
+          ...data,
+          // Asegurar que las propiedades requeridas existan
+          title: data.title || '',
+          description: data.description || '',
+          images: Array.isArray(data.images) ? data.images : (data.images ? [data.images] : []),
+          badges: Array.isArray(data.badges) ? data.badges : [],
+          url: data.url || '',
+          urlText: data.urlText || 'Ver más',
+          isActive: data.isActive === true
+        });
+        console.log('✅ Processed announcement:', announcements[announcements.length - 1]);
+      });
+      
+      console.log('📢 MenuSDK: Found announcements:', announcements.length);
+      return announcements;
+    } catch (error) {
+      console.error('❌ Error getting announcements:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 🔄 Escucha cambios en tiempo real de los anuncios
+   * @param {Function} callback - Función que se ejecutará cuando cambien los anuncios
+   * @returns {Function} - Función para desuscribirse del listener
+   */
+  subscribeToAnnouncements(callback) {
+    try {
+      console.log('👂 MenuSDK: Setting up announcements subscription for business:', this.businessId);
+      
+      const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+      const q = query(
+        announcementsRef,
+        where('isActive', '==', true),
+        orderBy('createdAt', 'desc'),
+        limit(10)
+      );
+      
+      return onSnapshot(q, (snapshot) => {
+        const announcements = [];
+        
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          console.log('📄 Real-time announcement data:', doc.id, data);
+          announcements.push({
+            id: doc.id,
+            ...data,
+            // Asegurar que las propiedades requeridas existan
+            title: data.title || '',
+            description: data.description || '',
+            images: Array.isArray(data.images) ? data.images : (data.images ? [data.images] : []),
+            badges: Array.isArray(data.badges) ? data.badges : [],
+            url: data.url || '',
+            urlText: data.urlText || 'Ver más',
+            isActive: data.isActive === true
+          });
+          console.log('✅ Real-time processed announcement:', announcements[announcements.length - 1]);
+        });
+        
+        console.log('📢 MenuSDK: Announcements real-time update:', announcements.length);
+        callback(announcements);
+      }, (error) => {
+        console.error('❌ Error in announcements subscription:', error);
+        callback([]);
+      });
+    } catch (error) {
+      console.error('❌ Error setting up announcements subscription:', error);
+      throw error;
+    }
+  }
 }
 
 /**

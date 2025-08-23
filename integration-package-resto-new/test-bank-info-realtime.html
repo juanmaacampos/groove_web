@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Información Bancaria en Tiempo Real</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f7fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .test-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .test-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+        .status-pending { background: #fed7d7; color: #c53030; }
+        .status-success { background: #c6f6d5; color: #276749; }
+        .status-info { background: #bee3f8; color: #2b6cb0; }
+        .code-block {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        .test-button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: background 0.3s ease;
+        }
+        .test-button:hover {
+            background: #3182ce;
+        }
+        .test-button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1>🏦 Test - Información Bancaria en Tiempo Real</h1>
+        <p>Verifica que la información bancaria se actualice automáticamente</p>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Lista de Verificación</h2>
+        <ul class="checklist">
+            <li>
+                <span class="test-status status-info">MANUAL</span>
+                <strong>SDK actualizado:</strong> menu-sdk.js incluye onBusinessInfoChange()
+            </li>
+            <li>
+                <span class="test-status status-info">MANUAL</span>
+                <strong>Hook actualizado:</strong> useMenu.js utiliza listener en tiempo real
+            </li>
+            <li>
+                <span class="test-status status-info">MANUAL</span>
+                <strong>PaymentFlow actualizado:</strong> Muestra información bancaria
+            </li>
+            <li>
+                <span class="test-status status-info">MANUAL</span>
+                <strong>CSS actualizado:</strong> Estilos para información bancaria
+            </li>
+            <li>
+                <span class="test-status status-pending">TESTING</span>
+                <strong>Admin Panel:</strong> Información bancaria editable
+            </li>
+            <li>
+                <span class="test-status status-pending">TESTING</span>
+                <strong>Frontend:</strong> Información se actualiza en tiempo real
+            </li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Pruebas a Realizar</h2>
+        
+        <h3>1. Verificación en Admin Panel</h3>
+        <ol>
+            <li>Abre el admin panel del restaurante</li>
+            <li>Ve a la sección de información del restaurante</li>
+            <li>Marca "Transferencia Bancaria" como método de pago</li>
+            <li>Completa la información bancaria:
+                <div class="code-block">
+CBU: 0000003100010075720012
+Alias: RESTAURANTE.ANTHONY.BURGER
+Banco: Banco Nación
+Titular: Juan Pérez
+                </div>
+            </li>
+            <li>Guarda los cambios</li>
+        </ol>
+
+        <h3>2. Verificación en Frontend Público</h3>
+        <ol>
+            <li>Abre la página del restaurante en otra pestaña/navegador</li>
+            <li>Agrega productos al carrito</li>
+            <li>Ve al checkout</li>
+            <li>Selecciona "Transferencia Bancaria"</li>
+            <li>Verifica que aparezca la información bancaria</li>
+            <li>Prueba los botones de copiar CBU y Alias</li>
+        </ol>
+
+        <h3>3. Prueba de Tiempo Real</h3>
+        <ol>
+            <li>Deja abierta la página del cliente en checkout</li>
+            <li>En el admin panel, cambia el alias bancario</li>
+            <li>Guarda los cambios</li>
+            <li>Verifica que el alias se actualice automáticamente en la página del cliente</li>
+            <li><strong>No deberías necesitar recargar la página</strong></li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Debugging</h2>
+        
+        <h3>Si la información no se actualiza en tiempo real:</h3>
+        <ol>
+            <li>Abre las herramientas de desarrollador (F12)</li>
+            <li>Ve a la consola</li>
+            <li>Busca errores relacionados con Firebase listeners</li>
+            <li>Verifica que no haya errores de permisos en Firestore</li>
+        </ol>
+
+        <h3>Comandos de debugging:</h3>
+        <div class="code-block">
+// En la consola del navegador (página del cliente)
+console.log('Restaurant data:', restaurant);
+console.log('Bank info:', restaurant?.bankInfo);
+console.log('Payment methods:', restaurant?.paymentMethods);
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Criterios de Éxito</h2>
+        <ul>
+            <li>✅ La información bancaria aparece cuando se selecciona transferencia</li>
+            <li>✅ Los botones de copiar funcionan correctamente</li>
+            <li>✅ La información se actualiza sin recargar la página</li>
+            <li>✅ El diseño es responsivo en móvil y desktop</li>
+            <li>✅ No hay errores en la consola</li>
+            <li>✅ El flujo completo de pedido por transferencia funciona</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>📁 Archivos Modificados</h2>
+        <ul>
+            <li><code>menu-sdk.js</code> - Agregado onBusinessInfoChange()</li>
+            <li><code>useMenu.js</code> - Implementado listener en tiempo real</li>
+            <li><code>PaymentFlow.jsx</code> - Agregada sección de información bancaria</li>
+            <li><code>MenuComponents.css</code> - Estilos para información bancaria</li>
+            <li><code>README.md</code> - Documentación actualizada</li>
+            <li><code>ejemplo-transferencias-tiempo-real.jsx</code> - Ejemplo completo</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 Script de Migración</h2>
+        <p>Para migrar automáticamente los archivos al proyecto del cliente:</p>
+        <div class="code-block">
+cd integration-package/
+./migrate-bank-info.sh /ruta/al/proyecto/cliente
+        </div>
+        <p>O déjalo detectar automáticamente:</p>
+        <div class="code-block">
+./migrate-bank-info.sh
+        </div>
+    </div>
+
+    <script>
+        // Script simple para marcar tareas como completadas
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusElements = document.querySelectorAll('.test-status');
+            
+            statusElements.forEach(status => {
+                if (status.textContent === 'MANUAL') {
+                    status.addEventListener('click', function() {
+                        if (this.classList.contains('status-info')) {
+                            this.classList.remove('status-info');
+                            this.classList.add('status-success');
+                            this.textContent = 'DONE';
+                        } else if (this.classList.contains('status-success')) {
+                            this.classList.remove('status-success');
+                            this.classList.add('status-info');
+                            this.textContent = 'MANUAL';
+                        }
+                    });
+                    status.style.cursor = 'pointer';
+                    status.title = 'Click para marcar como completado';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

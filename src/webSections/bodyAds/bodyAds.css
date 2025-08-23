@@ -11,14 +11,22 @@
 :root { --p: 0; }
 .stack { position: relative; --stack-start: -9rem; --stack-spread: 10rem; }
 .stack-item { position: relative; will-change: transform, opacity, margin-top; }
-.stack-item.is-first { z-index: 2; }
-.stack-item.is-second { z-index: 1; }
+.stack-item.is-first { z-index: 3; }
+.stack-item.is-second { z-index: 2; }
+.stack-item.is-third { z-index: 1; }
 
 /* Overlap at start; as p→1, margin increases to separate clearly */
 .stack-item.is-second { 
 	margin-top: calc(var(--stack-start) + var(--p, 0) * var(--stack-spread));
 	transform: translateY(calc((1 - var(--p, 0)) * -10px));
 	opacity: calc(0.8 + var(--p, 0) * 0.2);
+	transition: margin-top .35s ease, transform .25s ease, opacity .25s ease;
+}
+
+.stack-item.is-third { 
+	margin-top: calc(var(--stack-start) * 1.8 + var(--p, 0) * var(--stack-spread) * 1.5);
+	transform: translateY(calc((1 - var(--p, 0)) * -20px));
+	opacity: calc(0.6 + var(--p, 0) * 0.4);
 	transition: margin-top .35s ease, transform .25s ease, opacity .25s ease;
 }
 
@@ -30,4 +38,101 @@
 
 @media (min-width: 900px) {
 	.stack { --stack-start: -12rem; --stack-spread: 12rem; }
+}
+
+/* Animación suave para aparición de anuncios dinámicos */
+.stack-item.is-first {
+	animation: fadeInSlide 0.6s ease-out;
+}
+
+@keyframes fadeInSlide {
+	from {
+		opacity: 0;
+		transform: translateY(20px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+/* Estados de carga para cuando no hay anuncios */
+.body-ads.no-announcements .stack-item.is-first {
+	animation: none;
+}
+
+/* Indicadores para anuncios múltiples - OCULTOS */
+.announcement-indicators {
+	display: none; /* Ocultamos completamente los indicadores de anuncios */
+}
+
+.announcement-indicators .indicator {
+	display: none;
+}
+
+.announcement-indicators .indicator.active {
+	display: none;
+}
+
+.announcement-indicators .indicator:hover {
+	display: none;
+}
+
+/* Indicadores de imágenes dentro del anuncio - OCULTOS */
+.image-indicators {
+	display: none; /* Ocultamos completamente los indicadores de imágenes */
+}
+
+.image-indicators .image-indicator {
+	display: none;
+}
+
+.image-indicators .image-indicator.active {
+	display: none;
+}
+
+.image-indicators .image-indicator:hover {
+	display: none;
+}
+
+/* Estados de carga y sin anuncios */
+.no-announcements-message {
+	background: var(--color-bg-alt, #f8f9fa);
+	border: 2px dashed var(--color-border, #e0e0e0);
+	border-radius: 12px;
+	padding: 2rem;
+	text-align: center;
+	color: var(--color-text-light, #666);
+	font-style: italic;
+}
+
+.announcements-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 3rem;
+	background: var(--color-bg-alt, #f8f9fa);
+	border-radius: 12px;
+	text-align: center;
+}
+
+.announcements-loading .loading-spinner {
+	width: 40px;
+	height: 40px;
+	border: 3px solid var(--color-border, #e0e0e0);
+	border-top: 3px solid var(--color-primary, #007bff);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-bottom: 1rem;
+}
+
+.announcements-loading p {
+	color: var(--color-text-light, #666);
+	margin: 0;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
 }

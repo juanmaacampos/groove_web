@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Demo - Sistema de Anuncios CMS</title>
+    
+    <!-- Estilos del componente -->
+    <link rel="stylesheet" href="MenuComponents.css">
+    
+    <!-- Firebase SDK v9+ -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, collection, query, where, orderBy, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+
+        // Configuración de Firebase (reemplaza con tus datos)
+        const firebaseConfig = {
+            apiKey: "demo-api-key",
+            authDomain: "cms-menu-demo.firebaseapp.com",
+            projectId: "cms-menu-demo",
+            storageBucket: "cms-menu-demo.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "demo-app-id"
+        };
+
+        // SDK simplificado para la demo
+        class DemoMenuSDK {
+            constructor(firebaseConfig, businessId) {
+                this.app = initializeApp(firebaseConfig, `demo-${Date.now()}`);
+                this.db = getFirestore(this.app);
+                this.businessId = businessId;
+            }
+
+            async getAnnouncements() {
+                try {
+                    const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+                    const q = query(
+                        announcementsRef,
+                        where('isActive', '==', true),
+                        orderBy('createdAt', 'desc')
+                    );
+                    const snapshot = await getDocs(q);
+                    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } catch (error) {
+                    console.warn('Demo: Using fallback data due to Firebase error');
+                    return this.getFallbackData();
+                }
+            }
+
+            subscribeToAnnouncements(callback) {
+                try {
+                    const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+                    const q = query(
+                        announcementsRef,
+                        where('isActive', '==', true),
+                        orderBy('createdAt', 'desc')
+                    );
+                    return onSnapshot(q, (snapshot) => {
+                        const announcements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        callback(announcements);
+                    });
+                } catch (error) {
+                    console.warn('Demo: Using fallback data for subscription');
+                    setTimeout(() => callback(this.getFallbackData()), 1000);
+                    return () => {};
+                }
+            }
+
+            // Datos de demostración para cuando Firebase no está disponible
+            getFallbackData() {
+                return [
+                    {
+                        id: 'demo1',
+                        title: '🍕 Nueva Pizza Especial',
+                        description: 'Prueba nuestra deliciosa pizza con ingredientes frescos y masa artesanal. ¡Disponible por tiempo limitado!',
+                        images: [
+                            'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=400&fit=crop',
+                            'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800&h=400&fit=crop'
+                        ],
+                        url: 'https://ejemplo-restaurante.com/menu/pizzas',
+                        urlText: 'Ver menú completo',
+                        badges: [
+                            { text: '¡Nuevo!' },
+                            { text: 'Especial' },
+                            { text: 'Popular' }
+                        ],
+                        isActive: true,
+                        createdAt: new Date()
+                    },
+                    {
+                        id: 'demo2',
+                        title: '🎉 Promoción de Fin de Semana',
+                        description: '2x1 en todas las bebidas los viernes y sábados. No te pierdas esta increíble oferta.',
+                        images: [
+                            'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800&h=400&fit=crop'
+                        ],
+                        url: 'https://ejemplo-restaurante.com/promociones',
+                        urlText: 'Ver todas las promociones',
+                        badges: [
+                            { text: '2x1' },
+                            { text: 'Fin de semana' }
+                        ],
+                        isActive: true,
+                        createdAt: new Date()
+                    },
+                    {
+                        id: 'demo3',
+                        title: '🌟 Menú Ejecutivo',
+                        description: 'Almuerzo completo con entrada, plato principal y postre. Perfecto para tu pausa del mediodía.',
+                        images: [
+                            'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&h=400&fit=crop'
+                        ],
+                        url: 'https://ejemplo-restaurante.com/menu-ejecutivo',
+                        urlText: 'Reservar mesa',
+                        badges: [
+                            { text: 'Ejecutivo' },
+                            { text: 'Completo' },
+                            { text: 'Rápido' },
+                            { text: 'Nutritivo' }
+                        ],
+                        isActive: true,
+                        createdAt: new Date()
+                    }
+                ];
+            }
+        }
+
+        // Inicializar la demo
+        document.addEventListener('DOMContentLoaded', () => {
+            const sdk = new DemoMenuSDK(firebaseConfig, 'demo-business');
+            renderAnnouncementsDemo(sdk);
+        });
+
+        // Renderizar la demo de anuncios
+        async function renderAnnouncementsDemo(sdk) {
+            const container = document.getElementById('announcements-demo');
+            
+            // Mostrar loading
+            container.innerHTML = `
+                <div class="announcements-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Cargando anuncios...</p>
+                </div>
+            `;
+
+            try {
+                const announcements = await sdk.getAnnouncements();
+                renderAnnouncements(container, announcements);
+                
+                // Configurar suscripción para actualizaciones en tiempo real
+                sdk.subscribeToAnnouncements(announcements => {
+                    renderAnnouncements(container, announcements);
+                });
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="menu-error">
+                        <p>Error al cargar anuncios: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Renderizar anuncios
+        function renderAnnouncements(container, announcements) {
+            if (!announcements.length) {
+                container.innerHTML = '<div class="menu-empty">No hay anuncios disponibles</div>';
+                return;
+            }
+
+            let currentSlide = 0;
+            
+            const announcementsHTML = `
+                <section class="announcements-section">
+                    <div class="announcements-container">
+                        ${announcements.map((announcement, index) => `
+                            <div class="announcement-slide ${index === currentSlide ? 'active' : ''}" 
+                                 data-index="${index}"
+                                 onclick="handleAnnouncementClick('${announcement.url || ''}')">
+                                
+                                ${announcement.images && announcement.images.length ? `
+                                    <div class="announcement-images">
+                                        ${announcement.images.map((img, imgIndex) => `
+                                            <img src="${img}" 
+                                                 alt="${announcement.title} - imagen ${imgIndex + 1}"
+                                                 class="announcement-image"
+                                                 loading="lazy">
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="announcement-content">
+                                    ${announcement.title ? `
+                                        <h3 class="announcement-title">${announcement.title}</h3>
+                                    ` : ''}
+                                    
+                                    ${announcement.description ? `
+                                        <p class="announcement-description">${announcement.description}</p>
+                                    ` : ''}
+                                    
+                                    ${announcement.urlText && announcement.url ? `
+                                        <div class="announcement-link">
+                                            <span class="link-text">${announcement.urlText}</span>
+                                            <span class="link-arrow">→</span>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${announcement.badges && announcement.badges.length ? `
+                                        <div class="announcement-badges">
+                                            ${announcement.badges
+                                                .filter(badge => badge.text && badge.text.trim())
+                                                .slice(0, 4)
+                                                .map(badge => `
+                                                    <span class="announcement-badge">${badge.text}</span>
+                                                `).join('')
+                                            }
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                        
+                        ${announcements.length > 1 ? `
+                            <div class="announcement-indicators">
+                                ${announcements.map((_, index) => `
+                                    <button class="indicator ${index === currentSlide ? 'active' : ''}"
+                                            onclick="changeSlide(${index})"
+                                            aria-label="Ver anuncio ${index + 1}"></button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </section>
+            `;
+
+            container.innerHTML = announcementsHTML;
+
+            // Auto-avance si hay múltiples anuncios
+            if (announcements.length > 1) {
+                setupAutoAdvance(announcements.length);
+            }
+        }
+
+        // Configurar auto-avance
+        let autoAdvanceInterval;
+        function setupAutoAdvance(totalSlides) {
+            clearInterval(autoAdvanceInterval);
+            
+            autoAdvanceInterval = setInterval(() => {
+                const activeSlide = document.querySelector('.announcement-slide.active');
+                if (!activeSlide) return;
+                
+                const currentIndex = parseInt(activeSlide.dataset.index);
+                const nextIndex = (currentIndex + 1) % totalSlides;
+                changeSlide(nextIndex);
+            }, 5000);
+        }
+
+        // Cambiar slide
+        window.changeSlide = function(index) {
+            const slides = document.querySelectorAll('.announcement-slide');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        };
+
+        // Manejar click en anuncio
+        window.handleAnnouncementClick = function(url) {
+            if (url && url.trim()) {
+                const finalUrl = url.startsWith('http') ? url : `https://${url}`;
+                window.open(finalUrl, '_blank', 'noopener,noreferrer');
+            }
+        };
+
+    </script>
+
+    <style>
+        /* Estilos adicionales para la demo */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-header h1 {
+            color: #2d3748;
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+        }
+
+        .demo-header p {
+            color: #718096;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .demo-info {
+            background: #edf2f7;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .demo-info h3 {
+            color: #2d3748;
+            margin-top: 0;
+        }
+
+        .demo-info code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .demo-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .demo-feature {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-feature h4 {
+            color: #2d3748;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .demo-feature p {
+            color: #718096;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Header de la demo -->
+        <header class="demo-header">
+            <h1>📢 Sistema de Anuncios CMS</h1>
+            <p>Demostración interactiva del componente de anuncios para restaurantes</p>
+        </header>
+
+        <!-- Información de la demo -->
+        <div class="demo-info">
+            <h3>🚀 Características principales:</h3>
+            <ul>
+                <li><strong>Tiempo real:</strong> Los anuncios se actualizan automáticamente desde Firebase</li>
+                <li><strong>Múltiples imágenes:</strong> Soporte para hasta 10 imágenes por anuncio</li>
+                <li><strong>Enlaces clickeables:</strong> URLs personalizadas que abren en nueva pestaña</li>
+                <li><strong>Badges promocionales:</strong> Hasta 4 etiquetas por anuncio</li>
+                <li><strong>Auto-avance:</strong> Rotación automática cada 5 segundos</li>
+                <li><strong>Responsive:</strong> Optimizado para móviles y escritorio</li>
+            </ul>
+        </div>
+
+        <!-- Demostración de anuncios -->
+        <div id="announcements-demo">
+            <!-- Los anuncios se cargarán aquí dinámicamente -->
+        </div>
+
+        <!-- Características técnicas -->
+        <div class="demo-features">
+            <div class="demo-feature">
+                <h4>🔥 Firebase Integration</h4>
+                <p>Conexión directa con Firestore para datos en tiempo real y Firebase Storage para imágenes</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>📱 Responsive Design</h4>
+                <p>Optimizado para cualquier dispositivo con breakpoints adaptativos</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>⚡ Performance</h4>
+                <p>Carga lazy de imágenes y optimizaciones para una experiencia fluida</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>🎨 Customizable</h4>
+                <p>Estilos CSS completamente personalizables con variables CSS</p>
+            </div>
+        </div>
+
+        <!-- Información de integración -->
+        <div class="demo-info">
+            <h3>🔧 Integración en tu proyecto:</h3>
+            <p>Para usar este componente en tu aplicación:</p>
+            <ol>
+                <li>Copia los archivos <code>menu-sdk.js</code>, <code>MenuComponents.jsx</code> y <code>MenuComponents.css</code></li>
+                <li>Configura Firebase con tu proyecto</li>
+                <li>Importa el componente: <code>import { AnnouncementsSection } from './MenuComponents.jsx'</code></li>
+                <li>Úsalo en tu app: <code>&lt;AnnouncementsSection menuSDK={sdk} /&gt;</code></li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
