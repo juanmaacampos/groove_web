@@ -39,7 +39,7 @@ const Footer = () => {
         </nav>
 
         <div className="footer-meta">
-          <small className="legal">© {year} Creado por <a href="https://jmcdev.site" target="_blank" rel="noreferrer noopener">JMCDEV</a>. Todos los derechos reservados.</small>
+          <strong><small className="legal">© {year} Creado por <a href="https://jmcdev.site" target="_blank" rel="noreferrer noopener">JMCDEV</a>. Todos los derechos reservados.</small></strong>
         </div>
       </div>
     </footer>

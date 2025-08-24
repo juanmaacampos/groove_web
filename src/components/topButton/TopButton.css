@@ -1,0 +1,43 @@
+.top-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  background-color: rgba(31, 51, 44, 0.7); /* Semi-transparent primary-green instead of accent */
+  color: #ffffff; /* White text/icon for better contrast */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--color-accent); /* Add a gold border */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(3px); /* Glass effect */
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.top-button.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.top-button:hover {
+  background-color: var(--color-primary-green); /* Solid color on hover */
+  transform: translateY(-3px) rotate(90deg); /* Add rotation for distinctive effect */
+  box-shadow: 0 6px 15px rgba(191, 161, 112, 0.4); /* Golden glow */
+  border-color: #ffffff; /* White border on hover */
+}
+
+@media (max-width: 768px) {
+  .top-button {
+    width: 45px;
+    height: 45px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+}

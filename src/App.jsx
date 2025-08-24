@@ -7,6 +7,7 @@ import Footer from './webSections/Footer/Footer.jsx';
 import Info from './webSections/Info/Info.jsx';
 import FirebaseProvider from './firebase/FirebaseProvider.jsx';
 import FeaturedModal from './components/FeaturedModal/FeaturedModal.jsx';
+import TopButton from './components/topButton/TopButton.jsx';
 import { useFeaturedModal } from './hooks/useFeaturedModal.js';
 import { useAnnouncements } from './firebase/useMenu.js';
 import { MenuSDK } from './firebase/menuSDK.js';
@@ -46,6 +47,10 @@ function AppContent({ onSelectMenu, selectedMenu }) {
         onClose={closeModal}
         announcement={featuredAnnouncement}
       />
+
+      {/* Scroll to top button */}
+      <TopButton />
+
     </>
   );
 }
