@@ -7,37 +7,36 @@
 /* spacing from header */
 .body-ads { margin-top: clamp(1rem, 3vw, 1.5rem); }
 
-/* Stacked unfolding effect */
-:root { --p: 0; }
-.stack { position: relative; --stack-start: -9rem; --stack-spread: 10rem; }
-.stack-item { position: relative; will-change: transform, opacity, margin-top; }
-.stack-item.is-first { z-index: 3; }
-.stack-item.is-second { z-index: 2; }
-.stack-item.is-third { z-index: 1; }
-
-/* Overlap at start; as p→1, margin increases to separate clearly */
-.stack-item.is-second { 
-	margin-top: calc(var(--stack-start) + var(--p, 0) * var(--stack-spread));
-	transform: translateY(calc((1 - var(--p, 0)) * -10px));
-	opacity: calc(0.8 + var(--p, 0) * 0.2);
-	transition: margin-top .35s ease, transform .25s ease, opacity .25s ease;
+/* Layout vertical simple - cards una abajo de la otra */
+.stack { 
+	display: flex;
+	flex-direction: column;
+	gap: 2rem; /* Espacio entre cards */
 }
 
+.stack-item { 
+	position: relative; 
+	width: 100%;
+	opacity: 1;
+	transform: none;
+	margin-top: 0;
+	z-index: auto;
+}
+
+.stack-item.is-first,
+.stack-item.is-second,
 .stack-item.is-third { 
-	margin-top: calc(var(--stack-start) * 1.8 + var(--p, 0) * var(--stack-spread) * 1.5);
-	transform: translateY(calc((1 - var(--p, 0)) * -20px));
-	opacity: calc(0.6 + var(--p, 0) * 0.4);
-	transition: margin-top .35s ease, transform .25s ease, opacity .25s ease;
+	margin-top: 0;
+	transform: none;
+	opacity: 1;
+	z-index: auto;
+	transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Slight lift of the first card as they separate */
-.stack-item.is-first {
-	transform: translateY(calc(var(--p, 0) * -6px));
-	transition: transform .25s ease;
-}
-
-@media (min-width: 900px) {
-	.stack { --stack-start: -12rem; --stack-spread: 12rem; }
+/* Hover effect para interactividad */
+.stack-item:hover {
+	transform: translateY(-4px);
+	transition: transform 0.3s ease;
 }
 
 /* Animación suave para aparición de anuncios dinámicos */
@@ -53,6 +52,19 @@
 	to {
 		opacity: 1;
 		transform: translateY(0) scale(1);
+	}
+}
+
+/* Responsive spacing */
+@media (min-width: 768px) {
+	.stack {
+		gap: 2.5rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.stack {
+		gap: 3rem;
 	}
 }
 

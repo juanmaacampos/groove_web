@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useGrooveMenus, useMenuCategories, useAnnouncements } from './useMenu.js';
+import { useGrooveMenus, useMenuCategories, useAnnouncements, useFeaturedAnnouncements } from './useMenu.js';
 import './MenuComponents.css';
 
 /**
@@ -450,8 +450,8 @@ export const MenuSearch = ({ menuSDK, onItemSelect }) => {
  * Muestra anuncios promocionales activos del negocio
  * Compatible con imágenes, URLs y badges
  */
-export const AnnouncementsSection = ({ menuSDK }) => {
-  const { announcements, loading, error } = useAnnouncements(menuSDK);
+export const AnnouncementsSection = ({ menuSDK, featuredOnly = false }) => {
+  const { announcements, loading, error } = useAnnouncements(menuSDK, featuredOnly);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
 
@@ -497,18 +497,25 @@ export const AnnouncementsSection = ({ menuSDK }) => {
   }
 
   return (
-    <section className="announcements-section">
+    <section className={`announcements-section ${featuredOnly ? 'featured-announcements' : ''}`}>
       <div className="announcements-container">
         {announcements.map((announcement, index) => (
           <div 
             key={announcement.id}
-            className={`announcement-slide ${index === currentSlide ? 'active' : ''}`}
+            className={`announcement-slide ${index === currentSlide ? 'active' : ''} ${announcement.isFeatured ? 'featured-slide' : ''}`}
             onClick={() => handleAnnouncementClick(announcement)}
             style={{ 
               cursor: announcement.url ? 'pointer' : 'default',
               display: index === currentSlide ? 'block' : 'none'
             }}
           >
+            {/* Badge de destacado */}
+            {announcement.isFeatured && (
+              <div className="featured-badge">
+                <span className="material-icons">star</span>
+                Destacado
+              </div>
+            )}
             {/* Imágenes del anuncio */}
             {announcement.images && announcement.images.length > 0 && (
               <div className="announcement-images">
@@ -587,4 +594,12 @@ export const AnnouncementsSection = ({ menuSDK }) => {
   );
 };
 
-export default { MenuSlider, MenuCard, MenuDropdown, MenuSearch, AnnouncementsSection };
+/**
+ * ⭐ COMPONENTE DE ANUNCIOS DESTACADOS
+ * Muestra solo los anuncios marcados como destacados
+ */
+export const FeaturedAnnouncementsSection = ({ menuSDK }) => {
+  return <AnnouncementsSection menuSDK={menuSDK} featuredOnly={true} />;
+};
+
+export default { MenuSlider, MenuCard, MenuDropdown, MenuSearch, AnnouncementsSection, FeaturedAnnouncementsSection };

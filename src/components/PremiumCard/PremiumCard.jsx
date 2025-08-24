@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { HiSpeakerphone } from 'react-icons/hi';
 import './premiumCard.css';
 import panaderiaImage from '../../assets/img/panaderia.png';
 import eventosImage from '../../assets/img/eventos.png';
@@ -10,6 +11,7 @@ import eventosImage from '../../assets/img/eventos.png';
  * - subtitle: string
  * - bullets?: string[]
  * - badges?: string[] - Additional badges to show after subtitle
+ * - isFeatured?: boolean - If true, shows featured indicator
  * - ctaLabel: string
  * - ctaHref: string
  * - ctaOnClick?: function - Función personalizada para manejar clicks
@@ -17,7 +19,7 @@ import eventosImage from '../../assets/img/eventos.png';
  * - imageAlt: string
  * - currentImageIndex?: number (for image sliding)
  */
-const PremiumCard = ({ title, subtitle, bullets = [], badges = [], ctaLabel, ctaHref = '#', ctaOnClick, imageSrc = panaderiaImage, imageAlt, currentImageIndex = 0 }) => {
+const PremiumCard = ({ title, subtitle, bullets = [], badges = [], isFeatured = false, ctaLabel, ctaHref = '#', ctaOnClick, imageSrc = panaderiaImage, imageAlt, currentImageIndex = 0 }) => {
   const [imageFailed, setImageFailed] = useState(false);
   const [images, setImages] = useState([]);
   
@@ -53,8 +55,17 @@ const PremiumCard = ({ title, subtitle, bullets = [], badges = [], ctaLabel, cta
   };
 
   return (
-    <article className="premium-card">
+    <article className={`premium-card ${isFeatured ? 'is-featured' : ''}`}>
       <div className="premium-card__media">
+        {/* Indicador de destacado */}
+              {/* Badge para anuncios destacados */}
+      {isFeatured && (
+        <div className="featured-badge">
+          <HiSpeakerphone />
+          Anuncio destacado
+        </div>
+      )}
+        
         {/* Slider de imágenes */}
         <div className="premium-card__slider">
           <div 

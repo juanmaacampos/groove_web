@@ -56,53 +56,42 @@ const validateImageUrl = (imageData) => {
 const BodyAds = () => {
   const sectionRef = useRef(null);
   const { announcements, loading, error } = useAnnouncements(menuSDK);
-  const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndexes, setCurrentImageIndexes] = useState({});
 
-  // Auto-rotar anuncios cada 8 segundos
-  useEffect(() => {
-    if (announcements.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentAnnouncementIndex(prev => {
-        const newIndex = (prev + 1) % announcements.length;
-        // Resetear índice de imagen cuando cambie el anuncio
-        setCurrentImageIndex(0);
-        return newIndex;
-      });
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, [announcements.length]);
-
-  // Auto-rotar imágenes dentro del anuncio actual cada 3 segundos
+  // Auto-rotar imágenes para cada anuncio individualmente
   useEffect(() => {
     if (announcements.length === 0) return;
 
-    const currentAnnouncement = announcements[currentAnnouncementIndex];
-    if (!currentAnnouncement || !currentAnnouncement.images || currentAnnouncement.images.length <= 1) {
-      return;
-    }
+    // Configurar intervalos para cada anuncio con múltiples imágenes
+    const intervals = [];
 
-    // Solo rotar si hay múltiples imágenes válidas
-    const validImages = currentAnnouncement.images.filter(img => {
-      const validation = validateImageUrl(img);
-      return validation.valid;
+    announcements.forEach((announcement, announcementIndex) => {
+      if (!announcement || !announcement.images || announcement.images.length <= 1) {
+        return;
+      }
+
+      // Solo rotar si hay múltiples imágenes válidas
+      const validImages = announcement.images.filter(img => {
+        const validation = validateImageUrl(img);
+        return validation.valid;
+      });
+
+      if (validImages.length <= 1) return;
+
+      const interval = setInterval(() => {
+        setCurrentImageIndexes(prev => ({
+          ...prev,
+          [announcement.id]: ((prev[announcement.id] || 0) + 1) % validImages.length
+        }));
+      }, 3000 + (announcementIndex * 500)); // Desfase para que no cambien todas al mismo tiempo
+
+      intervals.push(interval);
     });
 
-    if (validImages.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex(prev => (prev + 1) % validImages.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [announcements, currentAnnouncementIndex]);
-
-  // Resetear índice de imagen cuando cambie el anuncio
-  useEffect(() => {
-    setCurrentImageIndex(0);
-  }, [currentAnnouncementIndex]);
+    return () => {
+      intervals.forEach(interval => clearInterval(interval));
+    };
+  }, [announcements]);
 
   // Debug log para ver los anuncios
   useEffect(() => {
@@ -112,6 +101,7 @@ const BodyAds = () => {
         console.log(`📋 Anuncio ${index}:`, {
           id: announcement.id,
           title: announcement.title,
+          isFeatured: announcement.isFeatured,
           images: announcement.images,
           imagesType: typeof announcement.images,
           hasImages: announcement.images && Array.isArray(announcement.images) && announcement.images.length > 0
@@ -180,21 +170,19 @@ const BodyAds = () => {
     >
       <div className="body-ads__inner">
         <div className="stack">
-          {/* Anuncios de Firebase dinámicos */}
+          {/* Anuncios de Firebase dinámicos - Mostrar todos */}
           {announcements.length > 0 && (() => {
             try {
               return announcements.map((announcement, index) => {
-                // Solo mostrar el anuncio actual
-                if (index !== currentAnnouncementIndex) return null;
+                // Mostrar todas las cards, no solo la actual
                 
-                // Determinar las imágenes válidas para el slider
+                // Determinar las imágenes válidas para cada card
                 let validImages = [defaultAnnouncementImg]; // Imagen por defecto como fallback
                 console.log('🔍 BodyAds: Procesando imágenes del anuncio:', {
                   announcementId: announcement.id,
                   images: announcement.images,
                   imagesType: typeof announcement.images,
-                  imagesLength: announcement.images ? announcement.images.length : 0,
-                  currentImageIndex: currentImageIndex
+                  imagesLength: announcement.images ? announcement.images.length : 0
                 });
                 
                 if (announcement.images && Array.isArray(announcement.images) && announcement.images.length > 0) {
@@ -228,60 +216,26 @@ const BodyAds = () => {
                 }) || [];
                 console.log('🏷️ Badges procesadas:', badges);
                 
+                // Asignar clases de stack apropiadas
+                let stackClass = 'stack-item';
+                if (index === 0) stackClass += ' is-first';
+                else if (index === 1) stackClass += ' is-second'; 
+                else if (index === 2) stackClass += ' is-third';
+                
                 return (
-                  <div key={`announcement-${announcement.id}`} className="stack-item is-first">
+                  <div key={`announcement-${announcement.id}`} className={stackClass}>
                     <PremiumCard
                       title={announcement.title || "Anuncio especial"}
                       subtitle={announcement.description || "Descubre más sobre esta oferta especial"}
                       badges={badges}
                       bullets={[]} // No usamos bullets para anuncios, solo badges
+                      isFeatured={announcement.isFeatured || false}
                       ctaLabel={announcement.urlText || "Ver más"}
                       ctaHref={announcement.url || '#'}
                       imageSrc={validImages}
                       imageAlt={announcement.title || "Anuncio"}
-                      currentImageIndex={currentImageIndex % validImages.length}
+                      currentImageIndex={(currentImageIndexes[announcement.id] || 0) % validImages.length}
                     />
-                    
-                    {/* Indicadores de slides para anuncios múltiples */}
-                    {announcements.length > 1 && (
-                      <div className="announcement-indicators">
-                        {announcements.map((_, indicatorIndex) => (
-                          <button
-                            key={indicatorIndex}
-                            className={`indicator ${indicatorIndex === currentAnnouncementIndex ? 'active' : ''}`}
-                            onClick={() => setCurrentAnnouncementIndex(indicatorIndex)}
-                            aria-label={`Ver anuncio ${indicatorIndex + 1}`}
-                          />
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Indicadores de imágenes dentro del anuncio actual */}
-                    {(() => {
-                      if (announcements.length === 0) return null;
-                      const currentAnnouncement = announcements[currentAnnouncementIndex];
-                      if (!currentAnnouncement || !currentAnnouncement.images) return null;
-                      
-                      const validImages = currentAnnouncement.images.filter(img => {
-                        const validation = validateImageUrl(img);
-                        return validation.valid;
-                      });
-                      
-                      if (validImages.length <= 1) return null;
-                      
-                      return (
-                        <div className="image-indicators">
-                          {validImages.map((_, imgIndex) => (
-                            <button
-                              key={imgIndex}
-                              className={`image-indicator ${imgIndex === currentImageIndex ? 'active' : ''}`}
-                              onClick={() => setCurrentImageIndex(imgIndex)}
-                              aria-label={`Ver imagen ${imgIndex + 1}`}
-                            />
-                          ))}
-                        </div>
-                      );
-                    })()}
                   </div>
                 );
               });

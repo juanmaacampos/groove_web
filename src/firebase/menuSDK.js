@@ -373,12 +373,30 @@ export class MenuSDK {
           badges: Array.isArray(data.badges) ? data.badges : [],
           url: data.url || '',
           urlText: data.urlText || 'Ver más',
-          isActive: data.isActive === true
+          isActive: data.isActive === true,
+          isFeatured: data.isFeatured === true // Nueva propiedad para destacados
         });
         console.log('✅ Processed announcement:', announcements[announcements.length - 1]);
       });
       
       console.log('📢 MenuSDK: Found announcements:', announcements.length);
+      
+      // Ordenar anuncios: destacados (isFeatured) primero, luego por fecha de creación
+      announcements.sort((a, b) => {
+        // Si un anuncio es destacado y el otro no, el destacado va primero
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        
+        // Si ambos tienen el mismo estado de destacado, ordenar por fecha (más reciente primero)
+        if (a.createdAt && b.createdAt) {
+          return b.createdAt.seconds - a.createdAt.seconds;
+        }
+        
+        return 0;
+      });
+      
+      console.log('📢 MenuSDK: Announcements after sorting:', announcements.map(a => ({ id: a.id, title: a.title, isFeatured: a.isFeatured })));
+      
       return announcements;
     } catch (error) {
       console.error('❌ Error getting announcements:', error);
@@ -419,12 +437,30 @@ export class MenuSDK {
             badges: Array.isArray(data.badges) ? data.badges : [],
             url: data.url || '',
             urlText: data.urlText || 'Ver más',
-            isActive: data.isActive === true
+            isActive: data.isActive === true,
+            isFeatured: data.isFeatured === true // Nueva propiedad para destacados
           });
           console.log('✅ Real-time processed announcement:', announcements[announcements.length - 1]);
         });
         
         console.log('📢 MenuSDK: Announcements real-time update:', announcements.length);
+        
+        // Ordenar anuncios: destacados (isFeatured) primero, luego por fecha de creación
+        announcements.sort((a, b) => {
+          // Si un anuncio es destacado y el otro no, el destacado va primero
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          
+          // Si ambos tienen el mismo estado de destacado, ordenar por fecha (más reciente primero)
+          if (a.createdAt && b.createdAt) {
+            return b.createdAt.seconds - a.createdAt.seconds;
+          }
+          
+          return 0;
+        });
+        
+        console.log('📢 MenuSDK: Real-time announcements after sorting:', announcements.map(a => ({ id: a.id, title: a.title, isFeatured: a.isFeatured })));
+        
         callback(announcements);
       }, (error) => {
         console.error('❌ Error in announcements subscription:', error);

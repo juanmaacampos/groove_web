@@ -8,8 +8,21 @@
   box-shadow: 0 10px 25px rgba(0,0,0,.15); 
   transition: transform .22s ease, box-shadow .25s ease; 
   max-width: 400px;
-  margin: 0 auto;
+  border: 1px solid rgba(255,255,255,0.14);
 }
+
+/* Estilos para anuncios destacados */
+.premium-card.is-featured {
+  border: 2px solid rgba(255, 192, 123, 0.6); /* Color #FFC07B con transparencia */
+  background: radial-gradient(600px 60% at 10% 0%, rgba(255, 192, 123, .08) 0%, rgba(255,255,255,.02) 50%), #1e2a24;
+  box-shadow: 0 12px 32px rgba(255, 192, 123, 0.15), 0 4px 16px rgba(0,0,0,.2);
+}
+
+.premium-card.is-featured:hover {
+  border-color: rgba(255, 192, 123, 0.8);
+  box-shadow: 0 16px 40px rgba(255, 192, 123, 0.2), 0 8px 20px rgba(0,0,0,.25);
+}
+
 .premium-card + .premium-card { margin-top: clamp(1.25rem, 3vw, 2rem); }
 
 .premium-card__media {
@@ -24,6 +37,32 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+/* Badge de destacado */
+.featured-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #FFC07B;
+  color: #1e2a24;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(255, 192, 123, 0.3);
+}
+
+.featured-badge svg {
+  width: 12px;
+  height: 12px;
+  color: #1e2a24;
 }
 
 .premium-card__slides {
@@ -62,7 +101,7 @@
 
 .premium-card__title { 
   position: absolute;
-  bottom: 0;
+  bottom: -30px; /* Movido más abajo */
   left: 0;
   right: 0;
   padding: 1.5rem;

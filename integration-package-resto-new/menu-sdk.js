@@ -49,18 +49,34 @@ export class MenuSDK {
 
   /**
    * 📢 Obtiene todos los anuncios activos del negocio
+   * @param {boolean} featuredOnly - Si es true, solo obtiene anuncios destacados
    * @returns {Promise<Array>} Array de anuncios con imágenes y datos
    */
-  async getAnnouncements() {
+  async getAnnouncements(featuredOnly = false) {
     try {
-      console.log('📢 Getting announcements for business:', this.businessId);
+      console.log('📢 Getting announcements for business:', this.businessId, featuredOnly ? '(featured only)' : '');
       
       const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
-      const announcementsQuery = query(
+      let announcementsQuery = query(
         announcementsRef, 
-        where('isActive', '==', true),
-        orderBy('createdAt', 'desc')
+        where('isActive', '==', true)
       );
+
+      if (featuredOnly) {
+        announcementsQuery = query(
+          announcementsRef,
+          where('isActive', '==', true),
+          where('isFeatured', '==', true),
+          orderBy('createdAt', 'desc')
+        );
+      } else {
+        announcementsQuery = query(
+          announcementsRef,
+          where('isActive', '==', true),
+          orderBy('createdAt', 'desc')
+        );
+      }
+      
       const announcementsSnapshot = await getDocs(announcementsQuery);
       
       const announcements = announcementsSnapshot.docs.map(doc => ({
@@ -68,7 +84,7 @@ export class MenuSDK {
         ...doc.data()
       }));
       
-      console.log(`✅ Found ${announcements.length} active announcements`);
+      console.log(`✅ Found ${announcements.length} active announcements${featuredOnly ? ' (featured)' : ''}`);
       return announcements;
     } catch (error) {
       console.error('❌ Error getting announcements:', error);
@@ -77,20 +93,40 @@ export class MenuSDK {
   }
 
   /**
+   * ⭐ Obtiene solo los anuncios destacados activos
+   * @returns {Promise<Array>} Array de anuncios destacados
+   */
+  async getFeaturedAnnouncements() {
+    return this.getAnnouncements(true);
+  }
+
+  /**
    * 📢 Escucha cambios en tiempo real de los anuncios
    * @param {function} callback - Función que recibe los anuncios actualizados
+   * @param {boolean} featuredOnly - Si es true, solo escucha anuncios destacados
    * @returns {function} Función para cancelar la suscripción
    */
-  subscribeToAnnouncements(callback) {
+  subscribeToAnnouncements(callback, featuredOnly = false) {
     try {
-      console.log('👂 Subscribing to announcements for business:', this.businessId);
+      console.log('👂 Subscribing to announcements for business:', this.businessId, featuredOnly ? '(featured only)' : '');
       
       const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
-      const announcementsQuery = query(
-        announcementsRef,
-        where('isActive', '==', true),
-        orderBy('createdAt', 'desc')
-      );
+      let announcementsQuery;
+
+      if (featuredOnly) {
+        announcementsQuery = query(
+          announcementsRef,
+          where('isActive', '==', true),
+          where('isFeatured', '==', true),
+          orderBy('createdAt', 'desc')
+        );
+      } else {
+        announcementsQuery = query(
+          announcementsRef,
+          where('isActive', '==', true),
+          orderBy('createdAt', 'desc')
+        );
+      }
       
       return onSnapshot(announcementsQuery, (snapshot) => {
         const announcements = snapshot.docs.map(doc => ({
@@ -98,13 +134,22 @@ export class MenuSDK {
           ...doc.data()
         }));
         
-        console.log(`📢 Announcements updated: ${announcements.length} active`);
+        console.log(`📢 Announcements updated: ${announcements.length} active${featuredOnly ? ' (featured)' : ''}`);
         callback(announcements);
       });
     } catch (error) {
       console.error('❌ Error subscribing to announcements:', error);
       throw error;
     }
+  }
+
+  /**
+   * ⭐ Escucha cambios en tiempo real solo de los anuncios destacados
+   * @param {function} callback - Función que recibe los anuncios destacados actualizados
+   * @returns {function} Función para cancelar la suscripción
+   */
+  subscribeToFeaturedAnnouncements(callback) {
+    return this.subscribeToAnnouncements(callback, true);
   }
 
   /**

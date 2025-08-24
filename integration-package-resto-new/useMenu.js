@@ -547,9 +547,10 @@ export function useMenuWithTerminology(menuSDK) {
 /**
  * Hook para obtener anuncios activos del negocio en tiempo real
  * @param {MenuSDK} menuSDK - Instancia del SDK de menús
+ * @param {boolean} featuredOnly - Si es true, solo obtiene anuncios destacados
  * @returns {Object} - { announcements, loading, error, refresh }
  */
-export function useAnnouncements(menuSDK) {
+export function useAnnouncements(menuSDK, featuredOnly = false) {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -559,12 +560,12 @@ export function useAnnouncements(menuSDK) {
     if (!menuSDK) return;
 
     try {
-      console.log('📢 useAnnouncements: Fetching announcements...');
+      console.log('📢 useAnnouncements: Fetching announcements...', featuredOnly ? '(featured only)' : '');
       setLoading(true);
       setError(null);
       
-      const announcementsData = await menuSDK.getAnnouncements();
-      console.log('📢 useAnnouncements: Found announcements:', announcementsData.length);
+      const announcementsData = await menuSDK.getAnnouncements(featuredOnly);
+      console.log('📢 useAnnouncements: Found announcements:', announcementsData.length, featuredOnly ? '(featured)' : '');
       
       setAnnouncements(announcementsData);
     } catch (err) {
@@ -574,21 +575,21 @@ export function useAnnouncements(menuSDK) {
     } finally {
       setLoading(false);
     }
-  }, [menuSDK]);
+  }, [menuSDK, featuredOnly]);
 
   useEffect(() => {
     if (!menuSDK) return;
 
     // Configurar suscripción en tiempo real
     try {
-      console.log('👂 useAnnouncements: Setting up real-time subscription...');
+      console.log('👂 useAnnouncements: Setting up real-time subscription...', featuredOnly ? '(featured only)' : '');
       
       const unsubscribe = menuSDK.subscribeToAnnouncements((announcementsData) => {
-        console.log('📢 useAnnouncements: Real-time update:', announcementsData.length, 'announcements');
+        console.log('📢 useAnnouncements: Real-time update:', announcementsData.length, 'announcements', featuredOnly ? '(featured)' : '');
         setAnnouncements(announcementsData);
         setLoading(false);
         setError(null);
-      });
+      }, featuredOnly);
 
       unsubscribeRef.current = unsubscribe;
 
@@ -606,7 +607,7 @@ export function useAnnouncements(menuSDK) {
       // Fallback a refresh manual
       refresh();
     }
-  }, [menuSDK, refresh]);
+  }, [menuSDK, featuredOnly, refresh]);
 
   return {
     announcements,
@@ -614,4 +615,13 @@ export function useAnnouncements(menuSDK) {
     error,
     refresh
   };
+}
+
+/**
+ * Hook para obtener solo anuncios destacados en tiempo real
+ * @param {MenuSDK} menuSDK - Instancia del SDK de menús
+ * @returns {Object} - { announcements, loading, error, refresh }
+ */
+export function useFeaturedAnnouncements(menuSDK) {
+  return useAnnouncements(menuSDK, true);
 }
