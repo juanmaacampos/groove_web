@@ -29,8 +29,8 @@ export const Header = ({ onSelect }) => {
                 'cocteles',
                 'cafés',
                 'desayunos',
-                'almuerzos',
                 'tragos',
+                'tapeos',
               ]}
             />
           </span>

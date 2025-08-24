@@ -68,13 +68,28 @@ export const MenuCard = ({ type, menuData, onMore }) => {
   }
   
   if (!data) return null;
-  
+
+  const handleKeyDown = (e) => {
+    // Activate on Enter or Space
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onMore && onMore();
+    }
+  };
+
   return (
-    <div className="menu-card">
+    <div
+      className="menu-card clickable"
+      role="button"
+      tabIndex={0}
+      onClick={() => onMore && onMore()}
+      onKeyDown={handleKeyDown}
+      aria-label={`Ver menú ${data.title}`}
+    >
       {data.icon}
       <h2>{data.title}</h2>
       <p>{data.desc}</p>
-      <button onClick={onMore}>Ver Menú</button>
+  <div className="menu-card-cta" aria-hidden="true">Ver Menú</div>
     </div>
   );
 };

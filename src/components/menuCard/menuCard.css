@@ -56,3 +56,30 @@
   font-size: 3rem; /* Increase icon size */
   margin-bottom: 1rem; /* Add spacing below the icon */
 }
+
+/* Make the whole card act like a button */
+.menu-card.clickable {
+  cursor: pointer;
+}
+
+.menu-card.clickable:focus {
+  outline: 3px solid rgba(255,255,255,0.12);
+  outline-offset: 4px;
+}
+
+/* Keep a CTA visual but without the native button element */
+.menu-card-cta {
+  background: var(--color-accent);
+  color: #12291F;
+  font-family: var(--font-body);
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease;
+}
+.menu-card.clickable:hover .menu-card-cta {
+  transform: translateY(-2px);
+  filter:brightness(1.05);
+}
