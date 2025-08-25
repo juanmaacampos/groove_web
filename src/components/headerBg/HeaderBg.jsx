@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import img1 from '../../assets/img/header_img_1.png';
-import img2 from '../../assets/img/header_img_2.png';
-import img3 from '../../assets/img/header_img_3.png';
-import img4 from '../../assets/img/header_img_4.png';
+import img1 from '../../assets/img/header_img_1.webp';
+import img2 from '../../assets/img/header_img_2.webp';
+import img3 from '../../assets/img/header_img_3.webp';
+import img4 from '../../assets/img/header_img_4.webp';
 import './headerBg.css';
 
 // Simple decorative blurred background using the 4 images layered.
