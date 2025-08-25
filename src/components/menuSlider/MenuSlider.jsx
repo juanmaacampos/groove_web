@@ -29,11 +29,21 @@ export const MenuSlider = ({ onSelect }) => {
       return;
     }
     const carouselWidth = carouselRef.current.offsetWidth;
+    const trackWidth = trackRef.current.scrollWidth;
     const activeSlide = slidesRef.current[currentIndex];
     const slideOffsetLeft = activeSlide.offsetLeft;
     const slideWidth = activeSlide.offsetWidth;
     
-    const newTranslateX = (carouselWidth / 2) - (slideOffsetLeft + slideWidth / 2);
+    // Calcular la posición ideal para centrar el slide
+    let newTranslateX = (carouselWidth / 2) - (slideOffsetLeft + slideWidth / 2);
+    
+    // Aplicar límites para evitar scroll horizontal
+    const maxTranslateX = 0; // No puede ir más a la derecha del inicio
+    const minTranslateX = Math.min(0, carouselWidth - trackWidth); // No puede ir más a la izquierda
+    
+    // Limitar el translateX a los bounds válidos
+    newTranslateX = Math.max(minTranslateX, Math.min(maxTranslateX, newTranslateX));
+    
     setTranslateX(newTranslateX);
   }, [currentIndex]);
   

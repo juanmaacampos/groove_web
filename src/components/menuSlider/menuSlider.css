@@ -9,7 +9,8 @@
 
 @media (min-width: 768px) {
   .menu-carousel {
-    overflow: visible; /* Allow blur effect to show on desktop */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: visible; /* Allow blur effect to show vertically on desktop */
   }
 }
 

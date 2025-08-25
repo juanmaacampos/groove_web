@@ -1,4 +1,4 @@
-.site-header { position: relative; min-height: 100dvh; display:flex; align-items:flex-start; justify-content:center; background: var(--color-bg); color: var(--color-text); padding: clamp(1.2rem, 4vw, 2rem) 1rem 3rem; box-sizing:border-box; }
+.site-header { position: relative; min-height: 100dvh; display:flex; align-items:flex-start; justify-content:center; background: var(--color-bg); color: var(--color-text); padding: clamp(1.2rem, 4vw, 2rem) 1rem 3rem; box-sizing:border-box; overflow-x: hidden; }
 
 .header-inner { position:relative; width:100%; max-width: 760px; display:flex; flex-direction:column; align-items:center; z-index:1; }
 
