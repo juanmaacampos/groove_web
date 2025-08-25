@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../Modal/Modal.jsx';
 import PremiumCard from '../PremiumCard/PremiumCard.jsx';
-import defaultAnnouncementImg from '../../assets/img/eventos.png';
+import defaultAnnouncementImg from '../../assets/img/header_img_4.webp';
 
 // Function to validate and normalize URLs (same as in BodyAds)
 const validateImageUrl = (imageData) => {

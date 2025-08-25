@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HiSpeakerphone } from 'react-icons/hi';
 import './premiumCard.css';
-import panaderiaImage from '../../assets/img/panaderia.png';
-import eventosImage from '../../assets/img/eventos.png';
+import panaderiaImage from '../../assets/img/header_img_4.webp';
 
 /**
  * PremiumCard

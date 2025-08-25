@@ -6,7 +6,7 @@ import { MENU_CONFIG } from '../../firebase/config.js';
 import { useAnnouncements } from '../../firebase/useMenu.js';
 
 // Imagen por defecto para anuncios sin imagen
-import defaultAnnouncementImg from '../../assets/img/eventos.png';
+import defaultAnnouncementImg from '../../assets/img/header_img_4.webp';
 
 // Inicializar SDK de Firebase
 const menuSDK = new MenuSDK(MENU_CONFIG.firebaseConfig, MENU_CONFIG.businessId);
