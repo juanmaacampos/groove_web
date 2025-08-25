@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from 'react';
 import './menuDropdown.css';
 import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
 import { useGrooveMenus, useMenuCategories } from '../../utils/menuMapper.js';
+import Modal from '../../components/Modal/Modal.jsx';
 import grooveLogo from '/Groove_logo.svg';
 
 // Función para obtener imagen por defecto si no hay imagen en Firebase
@@ -9,7 +10,7 @@ const getDefaultImage = () => {
   return grooveLogo;
 };
 
-const Category = ({ cat, open, onToggle }) => {
+const Category = ({ cat, open, onToggle, onImageClick }) => {
   return (
     <div className={`md-cat ${open ? 'open' : ''}`}>
       <button className="md-cat-header" onClick={() => onToggle(cat.id)} aria-expanded={open}>
@@ -28,10 +29,12 @@ const Category = ({ cat, open, onToggle }) => {
                 <img 
                   src={item.img || getDefaultImage()} 
                   alt={item.name}
-                  className={!item.img ? 'placeholder' : ''}
+                  className={`md-item-image ${!item.img ? 'placeholder' : ''}`}
+                  style={{ cursor: item.img ? 'pointer' : 'default' }}
+                  onClick={() => item.img && onImageClick(item)}
                   onError={(e) => {
                     e.target.src = getDefaultImage();
-                    e.target.className = 'placeholder';
+                    e.target.className = 'md-item-image placeholder';
                   }}
                 />
               </div>
@@ -68,6 +71,8 @@ export const MenuDropdown = ({ menuType }) => {
   const { grooveMenus, loading: menusLoading } = useGrooveMenus(menuSDK);
   const { categories, loading: categoriesLoading, error } = useMenuCategories(menuSDK, menuType);
   const [openCat, setOpenCat] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   // Obtener información básica del menú seleccionado
   const menuInfo = useMemo(() => {
@@ -89,6 +94,16 @@ export const MenuDropdown = ({ menuType }) => {
   }, [categories]);
 
   const toggle = (id) => setOpenCat(prev => (prev === id ? null : id));
+
+  const handleImageClick = (item) => {
+    setSelectedItem(item);
+    setShowImageModal(true);
+  };
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedItem(null);
+  };
 
   // Estados de carga y error
   if (!isInitialized) {
@@ -160,10 +175,34 @@ export const MenuDropdown = ({ menuType }) => {
         <h2 className="md-title">{menuInfo?.title || 'Menú'}</h2>
         <div className="md-list">
           {categories.map(cat => (
-            <Category key={cat.id} cat={cat} open={openCat === cat.id} onToggle={toggle} />
+            <Category key={cat.id} cat={cat} open={openCat === cat.id} onToggle={toggle} onImageClick={handleImageClick} />
           ))}
         </div>
       </div>
+      
+      {/* Modal para mostrar imagen ampliada */}
+      <Modal 
+        isOpen={showImageModal} 
+        onClose={closeImageModal}
+        className="image-modal"
+      >
+        {selectedItem && (
+          <div className="image-modal-content">
+            <img 
+              src={selectedItem.img} 
+              alt={selectedItem.name}
+              className="modal-enlarged-image"
+            />
+            <div className="image-modal-info">
+              <h3 className="modal-item-name">{selectedItem.name}</h3>
+              <p className="modal-item-price">{selectedItem.price}</p>
+              {selectedItem.desc && (
+                <p className="modal-item-desc">{selectedItem.desc}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </section>
   );
 };
