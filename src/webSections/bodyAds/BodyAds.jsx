@@ -222,6 +222,11 @@ const BodyAds = () => {
                 else if (index === 1) stackClass += ' is-second'; 
                 else if (index === 2) stackClass += ' is-third';
                 
+                // Agregar clase featured si corresponde
+                if (announcement.isFeatured) {
+                  stackClass += ' featured';
+                }
+                
                 return (
                   <div key={`announcement-${announcement.id}`} className={stackClass}>
                     <PremiumCard

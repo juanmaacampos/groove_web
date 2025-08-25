@@ -3,8 +3,73 @@
   position: relative;
   width: 100%;
   height: 320px; /* Fixed height for the container */
-  overflow: hidden; /* Crucial to hide overflowing slides */
+  overflow: hidden; /* Hide slides on mobile */
   z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .menu-carousel {
+    overflow: visible; /* Allow blur effect to show on desktop */
+  }
+}
+
+/* Navigation buttons - only visible on desktop */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 192, 123, 0.3);
+  background: rgba(18, 41, 31, 0.85);
+  color: var(--color-accent);
+  cursor: pointer;
+  display: none; /* Hidden by default (mobile first) */
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.carousel-nav-btn:hover:not(:disabled) {
+  background: rgba(18, 41, 31, 0.95);
+  border-color: var(--color-accent);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+
+.carousel-nav-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.carousel-nav-btn--prev {
+  left: -80px;
+}
+
+.carousel-nav-btn--next {
+  right: -80px;
+}
+
+.carousel-nav-btn svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease;
+}
+
+.carousel-nav-btn:hover:not(:disabled) svg {
+  transform: scale(1.1);
 }
 
 .carousel-track {
@@ -68,6 +133,43 @@
   }
   .carousel-slide {
     width: 320px;
+  }
+}
+
+/* Show navigation buttons on desktop */
+@media (min-width: 768px) {
+  .carousel-nav-btn {
+    display: flex;
+  }
+  
+  /* Adjust carousel to accommodate buttons without cutting content */
+  .menu-carousel {
+    margin: 0 100px; /* Space for buttons */
+    overflow: visible; /* Allow blurred slides to show */
+  }
+  
+  /* Position buttons outside the carousel area */
+  .carousel-nav-btn--prev {
+    left: -80px;
+  }
+  
+  .carousel-nav-btn--next {
+    right: -80px;
+  }
+}
+
+/* For larger screens, give more space */
+@media (min-width: 1024px) {
+  .menu-carousel {
+    margin: 0 120px;
+  }
+  
+  .carousel-nav-btn--prev {
+    left: -90px;
+  }
+  
+  .carousel-nav-btn--next {
+    right: -90px;
   }
 }
 

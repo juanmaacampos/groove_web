@@ -7,6 +7,8 @@ import './menuSlider.css';
 export const MenuSlider = ({ onSelect }) => {
   const { menuSDK, isInitialized } = useFirebase();
   const { grooveMenus, loading, error } = useGrooveMenus(menuSDK);
+  // Obtener las keys de los menús disponibles (dinámico desde Firebase)
+  const keys = Object.keys(grooveMenus);
   
   // Estados siempre declarados al inicio
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,24 +16,13 @@ export const MenuSlider = ({ onSelect }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState(0);
   const [currentDrag, setCurrentDrag] = useState(0);
+  const [hasInitialized, setHasInitialized] = useState(false);
   
   // Referencias siempre declaradas al inicio
   const trackRef = useRef(null);
   const slidesRef = useRef([]);
   const carouselRef = useRef(null);
   
-  // Obtener las keys de los menús disponibles (dinámico desde Firebase)
-  const keys = Object.keys(grooveMenus);
-  
-  console.log('🎬 MenuSlider render:', { 
-    isInitialized, 
-    loading, 
-    error, 
-    menuSDKExists: !!menuSDK, 
-    keysLength: keys.length,
-    grooveMenus 
-  });
-
   // Calculate and set the translation to center the active slide
   const centerActiveSlide = useCallback(() => {
     if (!carouselRef.current || !trackRef.current || !slidesRef.current[currentIndex]) {
@@ -45,12 +36,48 @@ export const MenuSlider = ({ onSelect }) => {
     const newTranslateX = (carouselWidth / 2) - (slideOffsetLeft + slideWidth / 2);
     setTranslateX(newTranslateX);
   }, [currentIndex]);
+  
+  // Efecto para establecer el elemento del medio cuando se cargan los menús
+  useEffect(() => {
+    if (keys.length > 0 && !hasInitialized) {
+      const middleIndex = Math.floor(keys.length / 2);
+      setCurrentIndex(middleIndex);
+      setHasInitialized(true);
+    }
+  }, [keys.length, hasInitialized]);
+  
+  // Efecto para forzar recalculo cuando se inicializa
+  useEffect(() => {
+    if (hasInitialized) {
+      const timer = setTimeout(() => {
+        centerActiveSlide();
+      }, 50); // Un poco más de delay para asegurar que el DOM esté listo
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hasInitialized, centerActiveSlide]);
+  
+  console.log('🎬 MenuSlider render:', { 
+    isInitialized, 
+    loading, 
+    error, 
+    menuSDKExists: !!menuSDK, 
+    keysLength: keys.length,
+    grooveMenus 
+  });
 
   useEffect(() => {
     // Recalculate on index change and resize
-    centerActiveSlide();
+    // Usar setTimeout para asegurar que el DOM esté actualizado
+    const timer = setTimeout(() => {
+      centerActiveSlide();
+    }, 10);
+    
     window.addEventListener('resize', centerActiveSlide);
-    return () => window.removeEventListener('resize', centerActiveSlide);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', centerActiveSlide);
+    };
   }, [centerActiveSlide]);
 
   // --- Swipe Logic ---
@@ -94,12 +121,19 @@ export const MenuSlider = ({ onSelect }) => {
   useEffect(() => {
     const trackElement = trackRef.current;
     if (trackElement) {
-      trackElement.addEventListener('touchmove', handleDragMove, { passive: false });
+      // Agregar event listeners para mouse y touch
+      const handleMouseMove = (e) => handleDragMove(e);
+      const handleTouchMove = (e) => handleDragMove(e);
+      
+      trackElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+      trackElement.addEventListener('mousemove', handleMouseMove, { passive: false });
+      
       return () => {
-        trackElement.removeEventListener('touchmove', handleDragMove);
+        trackElement.removeEventListener('touchmove', handleTouchMove);
+        trackElement.removeEventListener('mousemove', handleMouseMove);
       };
     }
-  }, []);
+  }, [isDragging]); // Agregar isDragging como dependencia
 
   // Estados condicionales DESPUÉS de todos los hooks
   if (!isInitialized) {
@@ -142,8 +176,38 @@ export const MenuSlider = ({ onSelect }) => {
     );
   }
 
+  // Funciones para navegación con botones
+  const goToPrevious = () => {
+    setCurrentIndex(prev => Math.max(prev - 1, 0));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex(prev => Math.min(prev + 1, keys.length - 1));
+  };
+
+  // Función para manejar click en slides inactivos
+  const handleSlideClick = (index, e) => {
+    // Solo cambiar si no es el slide activo
+    if (index !== currentIndex) {
+      e.stopPropagation(); // Evitar interferir con el drag
+      setCurrentIndex(index);
+    }
+  };
+
   return (
     <div className="menu-carousel" ref={carouselRef}>
+      {/* Botón anterior - solo visible en desktop */}
+      <button 
+        className="carousel-nav-btn carousel-nav-btn--prev"
+        onClick={goToPrevious}
+        disabled={currentIndex === 0}
+        aria-label="Menú anterior"
+      >
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
       <div
         className="carousel-track"
         ref={trackRef}
@@ -163,12 +227,27 @@ export const MenuSlider = ({ onSelect }) => {
               key={key}
               className={`carousel-slide ${isActive ? 'active' : ''}`}
               ref={el => slidesRef.current[index] = el}
+              onClick={(e) => handleSlideClick(index, e)}
+              style={{ cursor: isActive ? 'default' : 'pointer' }}
             >
               <MenuCard type={key} menuData={grooveMenus[key]} onMore={() => onSelect && onSelect(key)} />
             </div>
           );
         })}
       </div>
+
+      {/* Botón siguiente - solo visible en desktop */}
+      <button 
+        className="carousel-nav-btn carousel-nav-btn--next"
+        onClick={goToNext}
+        disabled={currentIndex === keys.length - 1}
+        aria-label="Menú siguiente"
+      >
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+
       <div className="carousel-dots">
         {keys.map((_, index) => (
           <button

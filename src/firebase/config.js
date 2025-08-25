@@ -15,7 +15,7 @@ export const MENU_CONFIG = {
   },
 
   //ID del Negocio Principal - Groove
-  businessId: "0X2PjjSrO8hZmq2wZtREoKR9gej1",
+  businessId: "gACmubov5OQONvnLyJrrbX6qR7e2",
   
   // Configuración para Múltiples Menús
   multipleMenus: {

@@ -1,5 +1,50 @@
-.body-ads { position: relative; padding: clamp(1.5rem, 4vw, 2rem) 1rem clamp(2.5rem, 6vw, 3rem); background: var(--color-bg); color: var(--color-text); }
-.body-ads__inner { width:100%; max-width: 1200px; margin: 0 auto; }
+.body-ads { 
+	position: relative; 
+	padding: clamp(1.5rem, 4vw, 2rem) 0 clamp(2.5rem, 6vw, 3rem); 
+	background: var(--color-bg); 
+	color: var(--color-text); 
+	width: 100%; 
+	margin: 0;
+	display: block;
+}
+.body-ads__inner { 
+	width: 100%; 
+	max-width: 1200px; 
+	margin: 0 auto; 
+	padding: 0 1rem; 
+	box-sizing: border-box; 
+	display: block;
+	position: relative;
+}
+
+/* Mejorar el espaciado general en desktop */
+@media (min-width: 1024px) {
+	.body-ads {
+		padding: clamp(2rem, 5vw, 4rem) 0 clamp(3rem, 7vw, 5rem);
+		background: var(--color-bg);
+		position: relative;
+	}
+	
+	.body-ads__inner {
+		max-width: 1400px;
+		padding: 0 2rem;
+		position: relative;
+		z-index: 1;
+	}
+	
+	/* Agregar un sutil efecto de fondo para desktop */
+	.body-ads::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: radial-gradient(ellipse at center, rgba(255, 192, 123, 0.03) 0%, transparent 70%);
+		pointer-events: none;
+		z-index: 0;
+	}
+}
 
 /* Optional section title (hidden for now) */
 .body-ads__title { display:none; }
@@ -7,11 +52,14 @@
 /* spacing from header */
 .body-ads { margin-top: clamp(1rem, 3vw, 1.5rem); }
 
-/* Layout vertical simple - cards una abajo de la otra */
+/* Layout vertical simple - cards una abajo de la otra (mobile first) */
 .stack { 
 	display: flex;
 	flex-direction: column;
 	gap: 2rem; /* Espacio entre cards */
+	margin: 0;
+	padding: 0;
+	width: 100%;
 }
 
 .stack-item { 
@@ -19,7 +67,7 @@
 	width: 100%;
 	opacity: 1;
 	transform: none;
-	margin-top: 0;
+	margin: 0;
 	z-index: auto;
 }
 
@@ -59,12 +107,83 @@
 @media (min-width: 768px) {
 	.stack {
 		gap: 2.5rem;
+		/* Grid simple para tablets */
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: start;
+	}
+	
+	/* Mejor hover para tablets */
+	.stack-item:hover {
+		transform: translateY(-6px);
 	}
 }
 
 @media (min-width: 1024px) {
 	.stack {
 		gap: 3rem;
+		/* Grid de 3 columnas para desktop */
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		max-width: none;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		justify-items: center;
+		align-items: start;
+	}
+	
+	.stack-item {
+		width: 100%;
+		max-width: none;
+	}
+	
+	/* Hacer que las cards ocupen todo el ancho disponible en desktop */
+	.stack-item .premium-card {
+		max-width: none;
+		width: 100%;
+	}
+	
+	/* Animaciones más sofisticadas en desktop */
+	.stack-item {
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+					box-shadow 0.4s ease;
+	}
+	
+	.stack-item:hover {
+		transform: translateY(-8px) scale(1.02);
+		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.15));
+	}
+	
+	/* Stagger animation para desktop */
+	.stack-item.is-first {
+		animation-delay: 0s;
+	}
+	
+	.stack-item.is-second {
+		animation: fadeInSlide 0.6s ease-out 0.2s both;
+	}
+	
+	.stack-item.is-third {
+		animation: fadeInSlide 0.6s ease-out 0.4s both;
+	}
+}
+
+/* Para pantallas muy grandes */
+@media (min-width: 1440px) {
+	.stack {
+		gap: 4rem;
+		/* Mantener 3 columnas en pantallas grandes */
+		grid-template-columns: repeat(3, 1fr);
+	}
+	
+	.body-ads__inner {
+		max-width: 1600px;
+		padding: 0 3rem;
+	}
+	
+	.body-ads {
+		padding: clamp(2rem, 5vw, 4rem) 0 clamp(3rem, 7vw, 5rem);
 	}
 }
 
