@@ -3,7 +3,7 @@ import PremiumCard from '../../components/PremiumCard/PremiumCard.jsx';
 import './bodyAds.css';
 import { MenuSDK } from '../../firebase/menuSDK.js';
 import { MENU_CONFIG } from '../../firebase/config.js';
-import { useAnnouncements } from '../../firebase/useMenu.js';
+import { useAnnouncementsOptimized } from '../../firebase/useMenuOptimized.js';
 
 // Imagen por defecto para anuncios sin imagen
 import defaultAnnouncementImg from '../../assets/img/header_img_4.webp';
@@ -55,7 +55,12 @@ const validateImageUrl = (imageData) => {
 
 const BodyAds = () => {
   const sectionRef = useRef(null);
-  const { announcements, loading, error } = useAnnouncements(menuSDK);
+  // Usar hook optimizado (reduce lecturas Firebase)
+  const { announcements, loading, error } = useAnnouncementsOptimized(menuSDK, {
+    enableRealtime: false,   // No necesita tiempo real en esta sección
+    cacheOnly: false,       // Permite carga inicial
+    maxAge: 10 * 60 * 1000  // Cache por 10 minutos
+  });
   const [currentImageIndexes, setCurrentImageIndexes] = useState({});
 
   // Auto-rotar imágenes para cada anuncio individualmente

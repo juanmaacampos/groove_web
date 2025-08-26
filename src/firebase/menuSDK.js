@@ -1,9 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, onSnapshot, where, limit } from 'firebase/firestore';
+import { firebaseCache } from './cache.js';
+import { smartListenerManager } from './smartListener.js';
 
 /**
- * 🍽️ MENU SDK PARA GROOVE - Integración con Firebase
- * SDK para conectar la web de Groove con Firebase y obtener menús dinámicos
+ * 🍽️ MENU SDK OPTIMIZADO PARA GROOVE - Integración con Firebase con Cache
+ * SDK para conectar la web de Groove con Firebase minimizando el consumo de cuota
  */
 export class MenuSDK {
   constructor(firebaseConfig, businessId) {
@@ -13,9 +15,17 @@ export class MenuSDK {
   }
 
   /**
-   * 🏢 Obtiene información básica del negocio
+   * 🏢 Obtiene información básica del negocio (CON CACHE)
    */
   async getBusinessInfo() {
+    const cacheKey = firebaseCache.generateKey('businesses', this.businessId);
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const businessRef = doc(this.db, 'businesses', this.businessId);
       const businessDoc = await getDoc(businessRef);
@@ -24,7 +34,12 @@ export class MenuSDK {
         throw new Error(`Negocio no encontrado con ID: ${this.businessId}`);
       }
       
-      return businessDoc.data();
+      const businessData = businessDoc.data();
+      
+      // Guardar en cache por 30 minutos
+      firebaseCache.set(cacheKey, businessData, 30 * 60 * 1000);
+      
+      return businessData;
     } catch (error) {
       console.error('Error getting business info:', error);
       throw error;
@@ -32,17 +47,27 @@ export class MenuSDK {
   }
 
   /**
-   * 🔄 Escucha cambios en tiempo real de la información del negocio
+   * 🔄 Escucha cambios en tiempo real de la información del negocio (OPTIMIZADO)
    * @param {Function} callback - Función que se ejecutará cuando cambie la información
    * @returns {Function} - Función para desuscribirse del listener
    */
   onBusinessInfoChange(callback) {
+    const listenerKey = `business-info-${this.businessId}`;
+    
     try {
       const businessRef = doc(this.db, 'businesses', this.businessId);
       
-      return onSnapshot(businessRef, (doc) => {
+      const unsubscribe = onSnapshot(businessRef, (doc) => {
+        // Actualizar uso del listener
+        smartListenerManager.updateUsage(listenerKey);
+        
         if (doc.exists()) {
-          callback(doc.data(), null);
+          const businessData = doc.data();
+          // Actualizar cache cuando lleguen datos en tiempo real
+          const cacheKey = firebaseCache.generateKey('businesses', this.businessId);
+          firebaseCache.set(cacheKey, businessData, 30 * 60 * 1000);
+          
+          callback(businessData, null);
         } else {
           callback(null, new Error('Negocio no encontrado'));
         }
@@ -50,6 +75,14 @@ export class MenuSDK {
         console.error('Error in business listener:', error);
         callback(null, error);
       });
+      
+      // Registrar el listener para auto-limpieza
+      smartListenerManager.registerListener(listenerKey, unsubscribe, {
+        autoCleanup: true,
+        priority: 'high' // Info del negocio es crítica
+      });
+      
+      return () => smartListenerManager.removeListener(listenerKey);
     } catch (error) {
       console.error('Error setting up business info listener:', error);
       throw error;
@@ -57,28 +90,29 @@ export class MenuSDK {
   }
 
   /**
-   * 📋 Obtiene el menú completo organizizado por categorías (solo items visibles)
+   * 📋 Obtiene el menú completo organizizado por categorías (OPTIMIZADO CON CACHE)
    */
   async getFullMenu() {
+    const cacheKey = firebaseCache.generateKey('menus', this.businessId, { type: 'full' });
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
-      console.log('📋 MenuSDK: obteniendo menú completo para businessId:', this.businessId);
-      
-      // Obtener todos los menús disponibles primero
-      console.log('📋 MenuSDK: obteniendo lista de menús...');
+      // Obtener todos los menús disponibles
       const menusRef = collection(this.db, 'businesses', this.businessId, 'menus');
       const menusSnapshot = await getDocs(menusRef);
       
       if (menusSnapshot.docs.length === 0) {
-        console.log('📋 MenuSDK: no se encontraron menús');
         return [];
       }
-
-      console.log('📋 MenuSDK: menús encontrados:', menusSnapshot.docs.length);
       
-      // Retornar la información de cada menú (no las categorías)
+      // Procesar menús sin logs excesivos
       const menusList = menusSnapshot.docs.map(menuDoc => {
         const menuData = menuDoc.data();
-        console.log('📋 MenuSDK: menú:', menuDoc.id, menuData);
         
         return {
           id: menuDoc.id,
@@ -90,12 +124,14 @@ export class MenuSDK {
         };
       });
 
-      // Filtrar solo menús activos y ordenar
+      // Filtrar solo menús activos y ordenar (en cliente para reducir queries)
       const activeMenus = menusList
         .filter(menu => menu.active)
         .sort((a, b) => (a.order || 0) - (b.order || 0));
       
-      console.log('✅ MenuSDK: menús activos obtenidos:', activeMenus);
+      // Guardar en cache por 15 minutos
+      firebaseCache.set(cacheKey, activeMenus, 15 * 60 * 1000);
+      
       return activeMenus;
     } catch (error) {
       console.error('❌ Error getting full menu:', error);
@@ -104,22 +140,34 @@ export class MenuSDK {
   }
 
   /**
-   * 📋 Obtiene múltiples menús disponibles para el negocio
+   * 📋 Obtiene múltiples menús disponibles para el negocio (CON CACHE)
    */
   async getAvailableMenus() {
+    const cacheKey = firebaseCache.generateKey('menus', this.businessId, { type: 'available' });
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const menusRef = collection(this.db, 'businesses', this.businessId, 'menus');
-      // Simplificar la query para evitar problemas de índices
       const menusSnapshot = await getDocs(menusRef);
       
-      // Filtrar en el cliente por ahora
-      return menusSnapshot.docs
+      // Filtrar y ordenar en el cliente
+      const activeMenus = menusSnapshot.docs
         .map(doc => ({
           id: doc.id,
           ...doc.data()
         }))
-        .filter(menu => menu.active !== false) // Solo menús activos
-        .sort((a, b) => (a.order || 0) - (b.order || 0)); // Ordenar por orden
+        .filter(menu => menu.active !== false)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      // Guardar en cache por 15 minutos
+      firebaseCache.set(cacheKey, activeMenus, 15 * 60 * 1000);
+      
+      return activeMenus;
     } catch (error) {
       console.error('Error getting available menus:', error);
       return [];
@@ -127,46 +175,135 @@ export class MenuSDK {
   }
 
   /**
-   * 📄 Obtiene un menú específico por su ID con todas sus categorías e items
+   * 📄 Obtiene solo los nombres de categorías de un menú (SIN items)
+   * OPTIMIZACIÓN: Para lazy loading - solo carga estructura básica
+   */
+  async getMenuCategoriesOnly(menuId) {
+    const cacheKey = firebaseCache.generateKey('menu-categories-only', menuId);
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      // Obtener solo las categorías, sin sus items
+      const categoriesRef = collection(this.db, 'businesses', this.businessId, 'menus', menuId, 'categories');
+      const categoriesSnapshot = await getDocs(categoriesRef);
+      
+      const categoryNames = categoriesSnapshot.docs.map(categoryDoc => {
+        const categoryData = categoryDoc.data();
+        return {
+          id: categoryDoc.id,
+          name: categoryData.name || 'Categoría sin nombre',
+          description: categoryData.description || '',
+          order: categoryData.order || 0,
+          // Estimación aproximada del número de items (opcional)
+          itemCount: categoryData.itemCount || 0
+        };
+      });
+
+      // Ordenar por orden
+      categoryNames.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      // Guardar en cache por 20 minutos (las categorías cambian poco)
+      firebaseCache.set(cacheKey, categoryNames, 20 * 60 * 1000);
+      
+      return categoryNames;
+    } catch (error) {
+      console.error('❌ Error getting menu categories only:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 📦 Obtiene solo los items de una categoría específica
+   * OPTIMIZACIÓN: Para lazy loading - carga items bajo demanda
+   */
+  async getCategoryItems(menuId, categoryId) {
+    const cacheKey = firebaseCache.generateKey('category-items', `${menuId}-${categoryId}`);
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      // Obtener solo los items de esta categoría específica
+      const itemsRef = collection(this.db, 'businesses', this.businessId, 'menus', menuId, 'categories', categoryId, 'items');
+      const itemsSnapshot = await getDocs(itemsRef);
+      
+      const items = itemsSnapshot.docs
+        .map(itemDoc => ({
+          id: itemDoc.id,
+          ...itemDoc.data()
+        }))
+        .filter(item => !item.isHidden) // Solo items visibles
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '')); // Ordenar por nombre
+
+      // Guardar en cache por 10 minutos (items pueden cambiar más frecuentemente)
+      firebaseCache.set(cacheKey, items, 10 * 60 * 1000);
+      
+      return items;
+    } catch (error) {
+      console.error(`❌ Error getting category items for ${categoryId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * 📄 Obtiene un menú específico por su ID con todas sus categorías e items (CON CACHE)
    */
   async getMenuById(menuId) {
+    const cacheKey = firebaseCache.generateKey('menu-details', menuId);
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
-      console.log('📄 MenuSDK: obteniendo menú por ID:', menuId);
-      
-      // Obtener categorías del menú
+      // Obtener categorías del menú - SIN orderBy para reducir costo
       const categoriesRef = collection(this.db, 'businesses', this.businessId, 'menus', menuId, 'categories');
-      const categoriesQuery = query(categoriesRef, orderBy('order', 'asc'));
-      const categoriesSnapshot = await getDocs(categoriesQuery);
+      const categoriesSnapshot = await getDocs(categoriesRef);
       
       const categories = [];
       
       for (const categoryDoc of categoriesSnapshot.docs) {
         const categoryData = categoryDoc.data();
-        console.log('📄 MenuSDK: procesando categoría:', categoryDoc.id, categoryData);
         
-        // Obtener items de la categoría
+        // Obtener items de la categoría - SIN orderBy para reducir costo
         const itemsRef = collection(this.db, 'businesses', this.businessId, 'menus', menuId, 'categories', categoryDoc.id, 'items');
-        const itemsQuery = query(itemsRef, orderBy('name', 'asc'));
-        const itemsSnapshot = await getDocs(itemsQuery);
+        const itemsSnapshot = await getDocs(itemsRef);
         
         const items = itemsSnapshot.docs
           .map(itemDoc => ({
             id: itemDoc.id,
             ...itemDoc.data()
           }))
-          .filter(item => !item.isHidden); // Solo mostrar items no ocultos
+          .filter(item => !item.isHidden) // Solo mostrar items no ocultos
+          .sort((a, b) => (a.name || '').localeCompare(b.name || '')); // Ordenar en cliente
         
         if (items.length > 0) {
           categories.push({
             id: categoryDoc.id,
             name: categoryData.name,
             description: categoryData.description || '',
+            order: categoryData.order || 0,
             items
           });
         }
       }
       
-      console.log('✅ MenuSDK: categorías obtenidas para menú', menuId, ':', categories);
+      // Ordenar categorías en cliente
+      categories.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      // Guardar en cache por 10 minutos
+      firebaseCache.set(cacheKey, categories, 10 * 60 * 1000);
+      
       return categories;
     } catch (error) {
       console.error('❌ Error getting menu by id:', error);
@@ -342,18 +479,24 @@ export class MenuSDK {
   }
 
   /**
-   * 📢 Obtiene anuncios activos del negocio
+   * 📢 Obtiene anuncios activos del negocio (OPTIMIZADO)
    * @returns {Promise<Array>} Lista de anuncios activos
    */
   async getAnnouncements() {
+    const cacheKey = firebaseCache.generateKey('announcements', this.businessId);
+    
+    // Intentar obtener del cache primero
+    const cachedData = firebaseCache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
-      console.log('📢 MenuSDK: Fetching announcements for business:', this.businessId);
-      
       const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+      // QUERY SIMPLIFICADA: Solo filtro isActive, sin orderBy para reducir costo
       const q = query(
         announcementsRef,
         where('isActive', '==', true),
-        orderBy('createdAt', 'desc'),
         limit(10)
       );
       
@@ -362,11 +505,9 @@ export class MenuSDK {
       
       snapshot.forEach(doc => {
         const data = doc.data();
-        console.log('📄 Raw announcement data:', doc.id, data);
         announcements.push({
           id: doc.id,
           ...data,
-          // Asegurar que las propiedades requeridas existan
           title: data.title || '',
           description: data.description || '',
           images: Array.isArray(data.images) ? data.images : (data.images ? [data.images] : []),
@@ -374,20 +515,15 @@ export class MenuSDK {
           url: data.url || '',
           urlText: data.urlText || 'Ver más',
           isActive: data.isActive === true,
-          isFeatured: data.isFeatured === true // Nueva propiedad para destacados
+          isFeatured: data.isFeatured === true
         });
-        console.log('✅ Processed announcement:', announcements[announcements.length - 1]);
       });
       
-      console.log('📢 MenuSDK: Found announcements:', announcements.length);
-      
-      // Ordenar anuncios: destacados (isFeatured) primero, luego por fecha de creación
+      // Ordenar en cliente para reducir costo de Firebase
       announcements.sort((a, b) => {
-        // Si un anuncio es destacado y el otro no, el destacado va primero
         if (a.isFeatured && !b.isFeatured) return -1;
         if (!a.isFeatured && b.isFeatured) return 1;
         
-        // Si ambos tienen el mismo estado de destacado, ordenar por fecha (más reciente primero)
         if (a.createdAt && b.createdAt) {
           return b.createdAt.seconds - a.createdAt.seconds;
         }
@@ -395,7 +531,8 @@ export class MenuSDK {
         return 0;
       });
       
-      console.log('📢 MenuSDK: Announcements after sorting:', announcements.map(a => ({ id: a.id, title: a.title, isFeatured: a.isFeatured })));
+      // Guardar en cache por 5 minutos (anuncios se actualizan más frecuentemente)
+      firebaseCache.set(cacheKey, announcements, 5 * 60 * 1000);
       
       return announcements;
     } catch (error) {
@@ -405,32 +542,33 @@ export class MenuSDK {
   }
 
   /**
-   * 🔄 Escucha cambios en tiempo real de los anuncios
+   * 🔄 Escucha cambios en tiempo real de los anuncios (OPTIMIZADO)
    * @param {Function} callback - Función que se ejecutará cuando cambien los anuncios
    * @returns {Function} - Función para desuscribirse del listener
    */
   subscribeToAnnouncements(callback) {
+    const listenerKey = `announcements-${this.businessId}`;
+    
     try {
-      console.log('👂 MenuSDK: Setting up announcements subscription for business:', this.businessId);
-      
       const announcementsRef = collection(this.db, 'businesses', this.businessId, 'announcements');
+      // QUERY SIMPLIFICADA: sin orderBy para reducir costo
       const q = query(
         announcementsRef,
         where('isActive', '==', true),
-        orderBy('createdAt', 'desc'),
         limit(10)
       );
       
-      return onSnapshot(q, (snapshot) => {
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        // Actualizar uso del listener
+        smartListenerManager.updateUsage(listenerKey);
+        
         const announcements = [];
         
         snapshot.forEach(doc => {
           const data = doc.data();
-          console.log('📄 Real-time announcement data:', doc.id, data);
           announcements.push({
             id: doc.id,
             ...data,
-            // Asegurar que las propiedades requeridas existan
             title: data.title || '',
             description: data.description || '',
             images: Array.isArray(data.images) ? data.images : (data.images ? [data.images] : []),
@@ -438,20 +576,15 @@ export class MenuSDK {
             url: data.url || '',
             urlText: data.urlText || 'Ver más',
             isActive: data.isActive === true,
-            isFeatured: data.isFeatured === true // Nueva propiedad para destacados
+            isFeatured: data.isFeatured === true
           });
-          console.log('✅ Real-time processed announcement:', announcements[announcements.length - 1]);
         });
         
-        console.log('📢 MenuSDK: Announcements real-time update:', announcements.length);
-        
-        // Ordenar anuncios: destacados (isFeatured) primero, luego por fecha de creación
+        // Ordenar en cliente
         announcements.sort((a, b) => {
-          // Si un anuncio es destacado y el otro no, el destacado va primero
           if (a.isFeatured && !b.isFeatured) return -1;
           if (!a.isFeatured && b.isFeatured) return 1;
           
-          // Si ambos tienen el mismo estado de destacado, ordenar por fecha (más reciente primero)
           if (a.createdAt && b.createdAt) {
             return b.createdAt.seconds - a.createdAt.seconds;
           }
@@ -459,13 +592,23 @@ export class MenuSDK {
           return 0;
         });
         
-        console.log('📢 MenuSDK: Real-time announcements after sorting:', announcements.map(a => ({ id: a.id, title: a.title, isFeatured: a.isFeatured })));
+        // Actualizar cache con datos en tiempo real
+        const cacheKey = firebaseCache.generateKey('announcements', this.businessId);
+        firebaseCache.set(cacheKey, announcements, 5 * 60 * 1000);
         
         callback(announcements);
       }, (error) => {
         console.error('❌ Error in announcements subscription:', error);
         callback([]);
       });
+      
+      // Registrar el listener para auto-limpieza
+      smartListenerManager.registerListener(listenerKey, unsubscribe, {
+        autoCleanup: true,
+        priority: 'normal'
+      });
+      
+      return () => smartListenerManager.removeListener(listenerKey);
     } catch (error) {
       console.error('❌ Error setting up announcements subscription:', error);
       throw error;

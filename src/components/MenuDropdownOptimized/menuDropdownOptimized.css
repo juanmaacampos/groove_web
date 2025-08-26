@@ -1,4 +1,4 @@
-/* Menu Dropdown styles */
+/* Menu Dropdown styles - OPTIMIZADO CON LAZY LOADING */
 :root {
   --md-bg: #0c0c0c;
   --md-fg: #f3f3f0;
@@ -23,16 +23,28 @@
   margin: 0 auto;
 }
 
+.md-header {
+  margin-bottom: 32px;
+}
+
 .md-title {
   /* Use PP Eiko heading font and gold accent from header */
   font-family: var(--font-heading, 'PP Eiko', serif);
   font-weight: 700;
   font-size: clamp(28px, 5vw, 48px);
   text-align: center;
-  margin: 0 0 32px 0;
+  margin: 0 0 48px 0;
   letter-spacing: 0.5px;
   color: var(--color-accent, #FFC07B);
   line-height: 0.9;
+}
+
+.md-stats {
+  color: var(--md-muted);
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+  opacity: 0.7;
 }
 
 .md-list {
@@ -40,7 +52,8 @@
   gap: 12px;
 }
 
-.md-cat {
+/* CATEGORÍAS OPTIMIZADAS - MISMO ESTILO QUE ORIGINAL */
+.md-cat.lazy {
   background: var(--md-card);
   border: 1px solid var(--md-border);
   border-radius: 14px;
@@ -62,10 +75,27 @@
   text-align: left;
 }
 
+.md-cat-header:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .md-cat-name {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.md-cat-count {
+  background: rgba(255, 192, 123, 0.15);
+  color: var(--color-accent, #FFC07B);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .md-cat-arrow {
@@ -88,10 +118,32 @@
   height: 20px;
 }
 
-.md-cat.open .md-cat-arrow {
+.md-cat.lazy.open .md-cat-arrow {
   transform: rotate(180deg);
 }
 
+.md-cat-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* MINI SPINNER PARA LOADING */
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid var(--color-accent, #FFC07B);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* PANEL DE CATEGORÍA */
 .md-cat-panel {
   overflow: hidden;
   transition: max-height .35s ease;
@@ -106,6 +158,7 @@
   gap: 10px;
 }
 
+/* ITEMS OPTIMIZADOS - MISMO ESTILO QUE ORIGINAL */
 .md-item {
   display: grid;
   grid-template-columns: 88px 1fr;
@@ -118,6 +171,10 @@
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   min-width: 0; /* Permite que el grid se encoja */
+}
+
+.md-item-media {
+  flex-shrink: 0;
 }
 
 .md-item-media img {
@@ -187,55 +244,7 @@
   line-height: 1.4;
 }
 
-/* Estados de carga y error */
-.loading-state, .error-state, .empty-state {
-  text-align: center;
-  padding: 64px 24px;
-  color: var(--md-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.loading-state p {
-  font-size: 18px;
-  margin: 0;
-  animation: pulse 2s infinite;
-}
-
-/* Simple Page Loader */
-.simple-loader {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid var(--color-accent, #FFC07B);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.error-state p {
-  font-size: 16px;
-  margin: 8px 0;
-}
-
-.error-state p:first-child {
-  color: #ff6b6b;
-  font-weight: 600;
-}
-
-.empty-state p {
-  font-size: 16px;
-  margin: 8px 0;
-}
-
-/* Indicadores de stock */
+/* STOCK INDICATORS - MISMO ESTILO QUE ORIGINAL */
 .md-item-stock {
   margin-top: 4px;
 }
@@ -263,6 +272,158 @@
   color: #f56565;
 }
 
+/* SKELETON LOADING - MANTENIENDO TEMA OSCURO */
+.md-item-skeleton {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 14px;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--md-border);
+  padding: 8px;
+  background: var(--md-item-bg);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  min-width: 0;
+}
+
+.skeleton-wrapper {
+  display: contents;
+}
+
+.skeleton-image {
+  width: 88px;
+  height: 88px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-content {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.skeleton-title,
+.skeleton-price,
+.skeleton-desc {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-title {
+  height: 19px;
+  width: 70%;
+}
+
+.skeleton-price {
+  height: 19px;
+  width: 80px;
+  justify-self: end;
+}
+
+.skeleton-desc {
+  height: 16px;
+  width: 90%;
+}
+
+/* SHIMMER ANIMATION - TEMA OSCURO */
+.skeleton-image::after,
+.skeleton-title::after,
+.skeleton-price::after,
+.skeleton-desc::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ERROR Y EMPTY STATES */
+.md-item-error,
+.md-item-empty {
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--md-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.md-item-error button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: var(--color-accent, #FFC07B);
+  color: var(--md-bg);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.md-item-error button:hover {
+  background: #e6a962;
+}
+
+/* LOADING Y ERROR STATES GENERALES */
+.loading-state, .error-state, .empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--md-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loading-state p {
+  font-size: 18px;
+  margin: 0;
+  animation: pulse 2s infinite;
+}
+
+/* Simple Page Loader */
+.simple-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--color-accent, #FFC07B);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.error-state p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.error-state p:first-child {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
 /* Animación para estados de carga */
 @keyframes pulse {
   0%, 100% {
@@ -279,7 +440,7 @@
   }
 }
 
-/* Estilos para el modal de imagen */
+/* Estilos para el modal de imagen - IGUAL QUE ORIGINAL */
 .image-modal .modal-content {
   max-width: 90vw;
   max-height: 90vh;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Header from './webSections/Header/Header.jsx';
-import MenuDropdown from './webSections/menuDropdown/MenuDropdown.jsx';
+import MenuDropdownOptimized from './components/MenuDropdownOptimized/MenuDropdownOptimized.jsx';
 import BodyAds from './webSections/bodyAds/BodyAds.jsx';
 import Footer from './webSections/Footer/Footer.jsx';
 import Info from './webSections/Info/Info.jsx';
@@ -9,7 +9,7 @@ import FirebaseProvider from './firebase/FirebaseProvider.jsx';
 import FeaturedModal from './components/FeaturedModal/FeaturedModal.jsx';
 import TopButton from './components/topButton/TopButton.jsx';
 import { useFeaturedModal } from './hooks/useFeaturedModal.js';
-import { useAnnouncements } from './firebase/useMenu.js';
+import { useAnnouncementsOptimized } from './firebase/useMenuOptimized.js';
 import { MenuSDK } from './firebase/menuSDK.js';
 import { MENU_CONFIG } from './firebase/config.js';
 
@@ -27,8 +27,12 @@ function App() {
 }
 
 function AppContent({ onSelectMenu, selectedMenu }) {
-  // Get announcements for the modal
-  const { announcements } = useAnnouncements(menuSDK);
+  // Usar hook optimizado para anuncios (reduce ~80% de lecturas Firebase)
+  const { announcements } = useAnnouncementsOptimized(menuSDK, {
+    enableRealtime: true,    // Solo cuando sea necesario
+    cacheOnly: false,       // Permite tiempo real
+    maxAge: 5 * 60 * 1000   // Cache por 5 minutos
+  });
   
   // Use the featured modal hook
   const { isModalOpen, featuredAnnouncement, closeModal } = useFeaturedModal(announcements);
@@ -36,7 +40,7 @@ function AppContent({ onSelectMenu, selectedMenu }) {
   return (
     <>
       <Header onSelect={onSelectMenu} />
-      {selectedMenu && <MenuDropdown menuType={selectedMenu} />}
+      {selectedMenu && <MenuDropdownOptimized menuType={selectedMenu} />}
       <BodyAds />
       <Info />
       <Footer />
