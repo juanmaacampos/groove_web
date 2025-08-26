@@ -42,7 +42,6 @@ export function useMenu(menuSDK) {
 
       } catch (err) {
         setError(err.message);
-        console.error('Error loading menu:', err);
       } finally {
         setLoading(false);
       }
@@ -297,28 +296,23 @@ export function useAnnouncements(menuSDK) {
         
         // Verificar si el SDK tiene el método para anuncios
         if (typeof menuSDK.subscribeToAnnouncements === 'function') {
-          console.log('📢 useAnnouncements: Setting up real-time subscription...');
-          
           unsubscribe = menuSDK.subscribeToAnnouncements((announcementsData) => {
-            console.log('📢 useAnnouncements: Real-time update:', announcementsData.length, 'announcements');
             setAnnouncements(announcementsData || []);
             setLoading(false);
             setError(null);
           });
         } else if (typeof menuSDK.getAnnouncements === 'function') {
           // Fallback: carga única sin tiempo real
-          console.log('📢 useAnnouncements: Fetching announcements (one-time)...');
           const announcementsData = await menuSDK.getAnnouncements();
           setAnnouncements(announcementsData || []);
           setLoading(false);
         } else {
           // El SDK no tiene soporte para anuncios
-          console.warn('📢 useAnnouncements: SDK does not support announcements');
           setAnnouncements([]);
           setLoading(false);
         }
       } catch (err) {
-        console.error('❌ useAnnouncements error:', err);
+        console.error('useAnnouncements error:', err);
         setError(err.message);
         setAnnouncements([]);
         setLoading(false);
@@ -329,7 +323,6 @@ export function useAnnouncements(menuSDK) {
 
     return () => {
       if (unsubscribe && typeof unsubscribe === 'function') {
-        console.log('🔌 useAnnouncements: Cleaning up subscription');
         unsubscribe();
       }
     };

@@ -67,7 +67,6 @@ export function useMenuOptimized(menuSDK, options = {}) {
     } catch (err) {
       if (isComponentMounted.current) {
         setError(err.message);
-        console.error('Error loading menu:', err);
       }
     } finally {
       if (isComponentMounted.current) {

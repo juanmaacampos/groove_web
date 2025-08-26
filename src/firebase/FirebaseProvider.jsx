@@ -17,25 +17,16 @@ export function FirebaseProvider({ children }) {
   useEffect(() => {
     async function initializeFirebase() {
       try {
-        console.log('🚀 Inicializando Firebase SDK para Groove...');
-        console.log('🔧 Config:', MENU_CONFIG.firebaseConfig);
-        console.log('🏪 Business ID:', MENU_CONFIG.businessId);
-        
         // Crear instancia del SDK
         const sdk = createMenuSDK(MENU_CONFIG.firebaseConfig, MENU_CONFIG.businessId);
-        console.log('✅ SDK creado correctamente');
         
         // Probar conectividad básica
-        console.log('🔍 Probando conectividad con Firebase...');
         const businessInfo = await sdk.getBusinessInfo();
-        console.log('✅ Conectividad verificada, info del negocio:', businessInfo);
         
         setMenuSDK(sdk);
         setIsInitialized(true);
-        
-        console.log('✅ Firebase SDK inicializado correctamente');
       } catch (err) {
-        console.error('❌ Error inicializando Firebase SDK:', err);
+        console.error('Error inicializando Firebase SDK:', err);
         setError(err.message);
         setIsInitialized(true); // Marcar como inicializado aunque haya error
       }

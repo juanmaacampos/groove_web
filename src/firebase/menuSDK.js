@@ -41,7 +41,6 @@ export class MenuSDK {
       
       return businessData;
     } catch (error) {
-      console.error('Error getting business info:', error);
       throw error;
     }
   }
@@ -134,7 +133,6 @@ export class MenuSDK {
       
       return activeMenus;
     } catch (error) {
-      console.error('❌ Error getting full menu:', error);
       throw error;
     }
   }

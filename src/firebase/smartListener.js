@@ -77,9 +77,7 @@ class SmartListenerManager {
       this.removeListener(key);
     });
 
-    if (toRemove.length > 0) {
-      console.log(`🧹 SmartListenerManager: Cleaned up ${toRemove.length} inactive listeners`);
-    }
+    this.lastCleanup = now;
   }
 
   /**
