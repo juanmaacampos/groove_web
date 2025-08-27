@@ -18,15 +18,29 @@ const menuSDK = new MenuSDK(MENU_CONFIG.firebaseConfig, MENU_CONFIG.businessId);
 
 function App() {
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const [activeSlide, setActiveSlide] = useState(null);
+  const [manualClickKey, setManualClickKey] = useState(0);
+  
+  // Manejar selección manual (con scroll)
+  const handleManualSelection = (menuType) => {
+    setSelectedMenu(menuType);
+    setManualClickKey(prev => prev + 1); // Incrementar key para forzar re-render
+  };
   
   return (
     <FirebaseProvider>
-      <AppContent onSelectMenu={setSelectedMenu} selectedMenu={selectedMenu} />
+      <AppContent 
+        onSelectMenu={handleManualSelection} 
+        selectedMenu={selectedMenu}
+        onSlideChange={setActiveSlide}
+        activeSlide={activeSlide}
+        manualClickKey={manualClickKey}
+      />
     </FirebaseProvider>
   );
 }
 
-function AppContent({ onSelectMenu, selectedMenu }) {
+function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, manualClickKey }) {
   // Usar hook optimizado para anuncios (reduce ~80% de lecturas Firebase)
   const { announcements } = useAnnouncementsOptimized(menuSDK, {
     enableRealtime: true,    // Solo cuando sea necesario
@@ -39,8 +53,15 @@ function AppContent({ onSelectMenu, selectedMenu }) {
   
   return (
     <>
-      <Header onSelect={onSelectMenu} />
-      {selectedMenu && <MenuDropdownOptimized menuType={selectedMenu} />}
+      <Header onSelect={onSelectMenu} onSlideChange={onSlideChange} />
+      {/* Mostrar dropdown para el slide activo (automático) o el menú seleccionado manualmente */}
+      {(activeSlide || selectedMenu) && (
+        <MenuDropdownOptimized 
+          key={selectedMenu ? `manual-${selectedMenu}-${manualClickKey}` : `auto-${activeSlide}`}
+          menuType={selectedMenu || activeSlide} 
+          autoScroll={!!selectedMenu} // Solo scroll automático si es selección manual
+        />
+      )}
       <BodyAds />
       <Info />
       <Footer />

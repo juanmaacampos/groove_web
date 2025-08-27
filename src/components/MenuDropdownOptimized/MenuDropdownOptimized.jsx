@@ -132,7 +132,7 @@ const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick }) =
   );
 };
 
-export const MenuDropdownOptimized = ({ menuType }) => {
+export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
   const sectionRef = useRef(null);
   const { menuSDK, isInitialized, error: firebaseError } = useFirebase();
   const { grooveMenus, loading: menusLoading } = useGrooveMenus(menuSDK);
@@ -173,13 +173,13 @@ export const MenuDropdownOptimized = ({ menuType }) => {
     setHasScrolledToMenu(false); // Reset scroll flag when menu changes
   }, [menuType]);
 
-  // Auto-scroll cuando se cargan las categorías (solo la primera vez para cada menú)
+  // Auto-scroll cuando se cargan las categorías (solo la primera vez para cada menú y si autoScroll está habilitado)
   useEffect(() => {
-    if (sectionRef.current && categories && categories.length > 0 && !hasScrolledToMenu) {
+    if (autoScroll && sectionRef.current && categories && categories.length > 0 && !hasScrolledToMenu) {
       sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setHasScrolledToMenu(true);
     }
-  }, [categories, hasScrolledToMenu]);
+  }, [categories, hasScrolledToMenu, autoScroll]);
 
   // Función para toggle de categorías (solo una abierta a la vez)
   const handleToggleCategory = (categoryId) => {
@@ -193,14 +193,31 @@ export const MenuDropdownOptimized = ({ menuType }) => {
       toggleCategory(categoryId);
       
       // Scroll suave hacia la categoría que se está abriendo después de un pequeño delay
+      // Este scroll siempre debe funcionar independientemente de autoScroll inicial
       setTimeout(() => {
         const categoryElement = document.getElementById(`category-${categoryId}`);
         if (categoryElement) {
-          categoryElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start',
-            inline: 'nearest'
-          });
+          // Si no se ha hecho scroll inicial al menú y autoScroll está deshabilitado,
+          // hacer scroll al menú primero, luego a la categoría
+          if (!hasScrolledToMenu && !autoScroll && sectionRef.current) {
+            sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setHasScrolledToMenu(true);
+            // Esperar un poco más para el scroll a la categoría
+            setTimeout(() => {
+              categoryElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+              });
+            }, 300);
+          } else {
+            // Scroll normal a la categoría
+            categoryElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start',
+              inline: 'nearest'
+            });
+          }
         }
       }, 100);
     }

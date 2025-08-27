@@ -261,7 +261,6 @@ const BodyAds = () => {
             <div className="stack-item is-first">
               <div className="announcements-loading">
                 <div className="loading-spinner"></div>
-                <p>Cargando anuncios...</p>
               </div>
             </div>
           )}

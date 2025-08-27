@@ -5,7 +5,7 @@ import MenuSlider from '../../components/menuSlider/MenuSlider.jsx';
 import Typewriter from '../../components/Typewriter/Typewriter.jsx';
 import './header.css';
 
-export const Header = ({ onSelect }) => {
+export const Header = ({ onSelect, onSlideChange }) => {
   // Trigger entrance animations once mounted
   const [entered, setEntered] = useState(false);
   useEffect(() => {
@@ -35,7 +35,7 @@ export const Header = ({ onSelect }) => {
             />
           </span>
         </h2>
-  <MenuSlider onSelect={onSelect} />
+  <MenuSlider onSelect={onSelect} onSlideChange={onSlideChange} />
       </div>
 
       {/* CTA inferior */}

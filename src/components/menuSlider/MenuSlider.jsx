@@ -4,7 +4,7 @@ import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
 import { useGrooveMenus } from '../../utils/menuMapper.js';
 import './menuSlider.css';
 
-export const MenuSlider = ({ onSelect }) => {
+export const MenuSlider = ({ onSelect, onSlideChange }) => {
   const { menuSDK, isInitialized } = useFirebase();
   const { grooveMenus, loading, error } = useGrooveMenus(menuSDK);
   // Obtener las keys de los menús disponibles (dinámico desde Firebase)
@@ -55,6 +55,13 @@ export const MenuSlider = ({ onSelect }) => {
       setHasInitialized(true);
     }
   }, [keys.length, hasInitialized]);
+
+  // Efecto para notificar cambios de selección automática al componente padre
+  useEffect(() => {
+    if (hasInitialized && onSlideChange && keys[currentIndex]) {
+      onSlideChange(keys[currentIndex]);
+    }
+  }, [currentIndex, hasInitialized, onSlideChange, keys]);
   
   // Efecto para forzar recalculo cuando se inicializa
   useEffect(() => {
@@ -240,7 +247,7 @@ export const MenuSlider = ({ onSelect }) => {
               onClick={(e) => handleSlideClick(index, e)}
               style={{ cursor: isActive ? 'default' : 'pointer' }}
             >
-              <MenuCard type={key} menuData={grooveMenus[key]} onMore={() => onSelect && onSelect(key)} />
+              <MenuCard type={key} menuData={grooveMenus[key]} onMore={isActive ? () => onSelect && onSelect(key) : undefined} />
             </div>
           );
         })}
