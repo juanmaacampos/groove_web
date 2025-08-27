@@ -2,22 +2,72 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="%BASE_URL%Groove_logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%Groove_logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Groove Café Web</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Groove Café - Cafetería y Restaurante en Campana, Buenos Aires | Menú Digital</title>
+    <meta name="description" content="Groove Café en Campana, Buenos Aires. Disfruta de la mejor experiencia gastronómica con nuestro café artesanal, desayunos, almuerzos y cenas. Menú digital actualizado, eventos especiales y ambiente único en el corazón de Campana." />
+    <meta name="keywords" content="Groove Café, café Campana, restaurante Campana Buenos Aires, cafetería Campana, menú digital, café artesanal, desayuno Campana, almuerzo Campana, cena Campana, eventos Campana, gastronomía Buenos Aires" />
+    <meta name="author" content="Groove Café" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Spanish" />
+    <meta name="geo.region" content="AR-BA" />
+    <meta name="geo.placename" content="Campana, Buenos Aires, Argentina" />
+    <meta name="geo.position" content="-34.1666;-58.9589" />
+    <meta name="ICBM" content="-34.1666, -58.9589" />
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Groove Café Web" />
-    <meta property="og:description" content="Disfruta de la mejor experiencia en Groove Café. Descubre nuestro menú y eventos especiales." />
-  <meta property="og:image" content="https://juanmaacampos.github.io/groove_web/Groove_open_graph_demo.png" />
-  <meta property="og:url" content="https://juanmaacampos.github.io/groove_web/" />
-    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Groove Café - Cafetería y Restaurante en Campana, Buenos Aires" />
+    <meta property="og:description" content="Disfruta de la mejor experiencia gastronómica en Groove Café Campana. Café artesanal, desayunos, almuerzos y cenas en un ambiente único. Menú digital actualizado y eventos especiales." />
+    <meta property="og:image" content="https://groovecafe.com.ar/Groove_open_graph_demo.png" />
+    <meta property="og:url" content="https://groovecafe.com.ar/" />
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="Groove Café" />
+    
+    <!-- Business-specific Open Graph -->
+    <meta property="business:contact_data:street_address" content="Campana, Buenos Aires" />
+    <meta property="business:contact_data:locality" content="Campana" />
+    <meta property="business:contact_data:region" content="Buenos Aires" />
+    <meta property="business:contact_data:country_name" content="Argentina" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Groove Café Web" />
-    <meta name="twitter:description" content="Disfruta de la mejor experiencia en Groove Café. Descubre nuestro menú y eventos especiales." />
-  <meta name="twitter:image" content="https://juanmaacampos.github.io/groove_web/Groove_open_graph_demo.png" />
+    <meta name="twitter:title" content="Groove Café - Cafetería y Restaurante en Campana, Buenos Aires" />
+    <meta name="twitter:description" content="Disfruta de la mejor experiencia gastronómica en Groove Café Campana. Café artesanal, desayunos, almuerzos y cenas en un ambiente único." />
+    <meta name="twitter:image" content="https://groovecafe.com.ar/Groove_open_graph_demo.png" />
+    <meta name="twitter:site" content="@groovecafe" />
+
+    <!-- Structured Data for Local Business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Groove Café",
+      "description": "Cafetería y restaurante en Campana, Buenos Aires, especializado en café artesanal, desayunos, almuerzos y cenas con menú digital.",
+      "url": "https://groovecafe.com.ar",
+      "telephone": "",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "",
+        "addressLocality": "Campana",
+        "addressRegion": "Buenos Aires",
+        "addressCountry": "AR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "-34.1666",
+        "longitude": "-58.9589"
+      },
+      "openingHours": [],
+      "servesCuisine": ["Argentine", "Café", "International"],
+      "priceRange": "$$",
+      "acceptsReservations": true,
+      "hasMenu": "https://groovecafe.com.ar",
+      "image": "https://groovecafe.com.ar/Groove_logo.svg"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
