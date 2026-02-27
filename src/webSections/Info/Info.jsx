@@ -48,19 +48,6 @@ const Info = () => {
           {/* Left: details */}
           <div className="info__details" aria-label="Datos de contacto">
             <div className="info-item">
-              <div className="info-item__icon" aria-hidden="true"><FaMapMarkerAlt /></div>
-              <div className="info-item__content">
-                <h3 className="info-item__title">Ubicación</h3>
-                <p className="info-item__text">
-                  Av. Int. Jorge Ruben Varela 512, B7223 Campana, Provincia de Buenos Aires
-                </p>
-                <a className="info-item__link" href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`} target="_blank" rel="noreferrer noopener">
-                  Ver en Google Maps
-                </a>
-              </div>
-            </div>
-
-            <div className="info-item">
               <div className="info-item__icon" aria-hidden="true"><FaWhatsapp /></div>
               <div className="info-item__content">
                 <h3 className="info-item__title">WhatsApp</h3>
@@ -94,6 +81,19 @@ const Info = () => {
                   <li><strong>Lun a Sab:</strong> 15:30 – 00:00</li>
                 </ul>
                 <p className="info-item__note">Reservas y eventos: escribinos y coordinamos tu fecha.</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div className="info-item__icon" aria-hidden="true"><FaMapMarkerAlt /></div>
+              <div className="info-item__content">
+                <h3 className="info-item__title">Ubicación</h3>
+                <p className="info-item__text">
+                  Av. Int. Jorge Ruben Varela 512, B7223 Campana, Provincia de Buenos Aires
+                </p>
+                <a className="info-item__link" href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`} target="_blank" rel="noreferrer noopener">
+                  Ver en Google Maps
+                </a>
               </div>
             </div>
           </div>

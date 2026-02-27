@@ -6,7 +6,7 @@ const TOOLTIP_DURATION_MS = 3200;
 
 const formatHour = (hour) => `${String(hour).padStart(2, '0')}:00`;
 
-const ModeTestControl = ({ visualMode, onToggleMode, dayStartHour = 12, dayEndHour = 19 }) => {
+const ModeTestControl = ({ visualMode, onToggleMode, dayStartHour = 7, dayEndHour = 19 }) => {
   const [showScheduleHint, setShowScheduleHint] = useState(false);
   const hideTimeoutRef = useRef(null);
 

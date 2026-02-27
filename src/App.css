@@ -54,5 +54,32 @@ body[data-mode='bar'] {
 	transition: background .35s ease, color .35s ease;
 }
 
+.web-test-badge {
+	position: fixed;
+	top: 12px;
+	right: 12px;
+	z-index: 80;
+	pointer-events: none;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	font-weight: 600;
+	background: var(--surface-soft);
+	border: 1px solid var(--surface-border);
+	color: var(--text-muted);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+@media (max-width: 640px) {
+	.web-test-badge {
+		top: 10px;
+		right: 10px;
+		font-size: 0.68rem;
+		padding: 3px 8px;
+	}
+}
+
 /* Utility container if needed later */
 .container { width:100%; max-width:1200px; margin:0 auto; padding:0 1rem; }

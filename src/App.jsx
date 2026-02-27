@@ -18,7 +18,7 @@ import { MENU_CONFIG } from './firebase/config.js';
 
 // Initialize Firebase SDK
 const menuSDK = new MenuSDK(MENU_CONFIG.firebaseConfig, MENU_CONFIG.businessId);
-const DAY_MODE_START_HOUR = 12;
+const DAY_MODE_START_HOUR = 7;
 const DAY_MODE_END_HOUR = 19;
 
 const getVisualModeFromTime = (date) => {
@@ -96,6 +96,7 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
   
   return (
     <div className="app-shell" data-mode={visualMode}>
+      <div className="web-test-badge" aria-label="Aviso de entorno de prueba">Web Test</div>
       <Header onSelect={onSelectMenu} onSlideChange={onSlideChange} mode={visualMode} />
 
       {/* Mostrar dropdown para el slide activo (automático) o el menú seleccionado manualmente */}

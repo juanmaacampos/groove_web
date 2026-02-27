@@ -6,6 +6,7 @@ const MOCK_REVIEWS = [
   {
     id: 1,
     author: 'Sofía M.',
+    avatar: 'https://i.pravatar.cc/96?img=32',
     rating: 5,
     text: 'Excelente atención y tragos increíbles. El ambiente de noche es espectacular para venir con amigos.',
     when: 'Hace 2 días'
@@ -13,6 +14,7 @@ const MOCK_REVIEWS = [
   {
     id: 2,
     author: 'Lucas R.',
+    avatar: 'https://i.pravatar.cc/96?img=12',
     rating: 5,
     text: 'Probamos brunch y cafetería. Todo fresco, rico y con porciones muy buenas. Volvemos seguro.',
     when: 'Hace 1 semana'
@@ -20,6 +22,7 @@ const MOCK_REVIEWS = [
   {
     id: 3,
     author: 'Emily T.',
+    avatar: 'https://i.pravatar.cc/96?img=47',
     rating: 5,
     text: 'Great spot in Campana. Fast service, quality cocktails, and very cozy vibe for dinner.',
     when: 'Hace 3 días'
@@ -46,16 +49,26 @@ const Reviews = ({ visualMode }) => {
         <div className="reviews__grid">
           {MOCK_REVIEWS.map((review) => (
             <article key={review.id} className="review-card">
+              <header className="review-card__header">
+                <img
+                  className="review-card__avatar"
+                  src={review.avatar}
+                  alt={`Foto de perfil de ${review.author}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="review-card__identity">
+                  <span className="review-card__author">{review.author}</span>
+                  <span className="review-card__when">{review.when}</span>
+                </div>
+              </header>
+
               <div className="review-card__rating" aria-label={`${review.rating} estrellas`}>
                 {Array.from({ length: review.rating }).map((_, idx) => (
                   <FaStar key={`${review.id}-star-${idx}`} />
                 ))}
               </div>
               <p className="review-card__text">“{review.text}”</p>
-              <footer className="review-card__meta">
-                <span className="review-card__author">{review.author}</span>
-                <span className="review-card__when">{review.when}</span>
-              </footer>
             </article>
           ))}
         </div>
