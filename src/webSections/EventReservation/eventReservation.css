@@ -1,0 +1,209 @@
+.event-reservation {
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: clamp(2.25rem, 6vw, 3.25rem) 1rem;
+}
+
+.event-reservation__inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.event-reservation__intro {
+  text-align: center;
+}
+
+.event-reservation__chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--surface-border, rgba(255,255,255,0.14));
+  background: var(--surface-soft, rgba(255,255,255,0.04));
+  color: var(--color-accent);
+  border-radius: 999px;
+  padding: .28rem .75rem;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.event-reservation__intro h2 {
+  margin: .65rem 0 .35rem;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.event-reservation__intro p {
+  margin: 0;
+  opacity: .92;
+}
+
+.event-reservation__card {
+  background: var(--surface-card, rgba(18, 41, 31, 0.75));
+  border: 1px solid var(--surface-border, rgba(255,255,255,0.12));
+  border-radius: 18px;
+  padding: 1.15rem;
+}
+
+.event-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.event-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .75rem;
+}
+
+.event-form label {
+  display: grid;
+  gap: .42rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.event-form input,
+.event-form select,
+.event-form textarea {
+  width: 100%;
+  border: 1px solid var(--surface-border, rgba(255,255,255,0.22));
+  background: var(--surface-soft, rgba(255,255,255,0.04));
+  color: var(--color-text);
+  border-radius: 12px;
+  padding: .86rem .9rem;
+  min-height: 48px;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-family: var(--font-body);
+}
+
+.event-form select,
+.event-form input[type='date'] {
+  min-height: 52px;
+  height: 52px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.event-form input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.event-form input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.event-form input[type='date']::-webkit-calendar-picker-indicator {
+  opacity: 0.9;
+}
+
+.event-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .event-form select,
+  .event-form input[type='date'] {
+    font-size: 16px;
+    line-height: 52px;
+  }
+}
+
+.event-form input:focus,
+.event-form select:focus,
+.event-form textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 26%, transparent);
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: var(--text-muted, rgba(255,255,255,0.68));
+}
+
+.event-form__full {
+  grid-column: 1 / -1;
+}
+
+.event-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.event-form__submit,
+.event-form__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  width: 100%;
+  min-height: 50px;
+  border-radius: 12px;
+  padding: .85rem 1rem;
+  font-size: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.event-form__submit {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  cursor: pointer;
+}
+
+.event-form__submit:hover,
+.event-form__submit:focus-visible {
+  filter: brightness(1.04);
+}
+
+.event-form__whatsapp {
+  color: var(--color-text);
+  border-color: var(--surface-border, rgba(255,255,255,0.22));
+  background: transparent;
+}
+
+.event-form__success {
+  text-align: center;
+  padding: 1.2rem;
+}
+
+.event-form__success h3 {
+  margin: 0 0 .4rem;
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+}
+
+.event-form__success p {
+  margin: 0;
+  opacity: .9;
+}
+
+@media (min-width: 860px) {
+  .event-reservation__card {
+    padding: 1.3rem;
+  }
+
+  .event-form__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .event-form__actions {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .event-form__submit,
+  .event-form__whatsapp {
+    width: auto;
+    min-width: 220px;
+  }
+}

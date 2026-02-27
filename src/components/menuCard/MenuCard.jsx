@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaCoffee, FaPizzaSlice, FaCocktail } from 'react-icons/fa'; // Importing additional icons
+import { FaCoffee, FaPizzaSlice, FaCocktail, FaLeaf, FaUtensils } from 'react-icons/fa';
 import { MdFastfood } from "react-icons/md";
 import './menuCard.css';
 
@@ -24,16 +24,35 @@ export const menus = {
 };
 
 // Función para obtener el icono apropiado basado en el nombre del menú
+const normalizeMenuName = (value = '') =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
 const getMenuIcon = (menuName) => {
   if (!menuName) return <MdFastfood className="menu-icon" />;
-  
-  const name = menuName.toLowerCase();
+
+  const name = normalizeMenuName(menuName);
+
+  const iconByExactName = {
+    'gluten free': <FaLeaf className="menu-icon" />,
+    cena: <FaUtensils className="menu-icon" />,
+    'nuestros cocteles': <FaCocktail className="menu-icon" />,
+    cafeteria: <FaCoffee className="menu-icon" />
+  };
+
+  if (iconByExactName[name]) {
+    return iconByExactName[name];
+  }
   
   // Mapear iconos basados en palabras clave en el nombre
-  if (name.includes('café') || name.includes('desayuno') || name.includes('breakfast')) {
+  if (name.includes('cafe') || name.includes('desayuno') || name.includes('breakfast')) {
     return <FaCoffee className="menu-icon" />;
   }
-  if (name.includes('bebida') || name.includes('Coctelería') || name.includes('cocktail') || name.includes('bar')) {
+  if (name.includes('bebida') || name.includes('cocteleria') || name.includes('cocktail') || name.includes('bar')) {
     return <FaCocktail className="menu-icon" />;
   }
   if (name.includes('pizza')) {
@@ -44,7 +63,7 @@ const getMenuIcon = (menuName) => {
   return <MdFastfood className="menu-icon" />;
 };
 
-export const MenuCard = ({ type, menuData, onMore }) => {
+export const MenuCard = ({ type, menuData, onMore, isPriority = false }) => {
   // Priorizar datos dinámicos de Firebase sobre configuración estática
   let data;
   
@@ -79,13 +98,16 @@ export const MenuCard = ({ type, menuData, onMore }) => {
 
   return (
     <div
-      className="menu-card clickable"
+      className={`menu-card clickable ${isPriority ? 'menu-card--priority' : ''}`}
       role="button"
       tabIndex={0}
       onClick={() => onMore && onMore()}
       onKeyDown={handleKeyDown}
       aria-label={`Ver menú ${data.title}`}
     >
+      {isPriority && (
+        <span className="menu-card-priority" aria-hidden="true">Destacado</span>
+      )}
       {data.icon}
       <h2>{data.title}</h2>
       <p>{data.desc}</p>

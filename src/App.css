@@ -3,6 +3,10 @@
 	--color-accent: #FFC07B;
 	--color-bg: #12291F;
 	--color-text: #FFFFFF;
+	--surface-card: rgba(18, 41, 31, 0.78);
+	--surface-soft: rgba(255, 255, 255, 0.04);
+	--surface-border: rgba(255, 255, 255, 0.14);
+	--text-muted: rgba(255, 255, 255, 0.72);
 	--font-heading: 'PPEiko', 'PP Eiko', serif;
 	--font-body: 'EBGaramond', 'Garamond', serif;
 }
@@ -18,11 +22,37 @@
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
-body { margin:0; font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); -webkit-font-smoothing: antialiased; }
+body { margin:0; font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); -webkit-font-smoothing: antialiased; transition: background .35s ease, color .35s ease; }
 img { max-width:100%; display:block; }
 button { font: inherit; }
-::-moz-selection { background: var(--color-accent); color:#12291F; }
-::selection { background: var(--color-accent); color:#12291F; }
+::-moz-selection { background: var(--color-accent); color: var(--color-bg); }
+::selection { background: var(--color-accent); color: var(--color-bg); }
+
+body[data-mode='day'] {
+	--color-accent: #B17741;
+	--color-bg: #E8D8C3;
+	--color-text: #1B2D21;
+	--surface-card: rgba(236, 220, 197, 0.78);
+	--surface-soft: rgba(27, 45, 33, 0.06);
+	--surface-border: rgba(27, 45, 33, 0.18);
+	--text-muted: rgba(27, 45, 33, 0.72);
+}
+
+body[data-mode='bar'] {
+	--color-accent: #FFC07B;
+	--color-bg: #12291F;
+	--color-text: #FFFFFF;
+	--surface-card: rgba(18, 41, 31, 0.78);
+	--surface-soft: rgba(255, 255, 255, 0.04);
+	--surface-border: rgba(255, 255, 255, 0.14);
+	--text-muted: rgba(255, 255, 255, 0.72);
+}
+
+.app-shell {
+	background: var(--color-bg);
+	color: var(--color-text);
+	transition: background .35s ease, color .35s ease;
+}
 
 /* Utility container if needed later */
 .container { width:100%; max-width:1200px; margin:0 auto; padding:0 1rem; }

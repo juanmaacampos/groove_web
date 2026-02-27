@@ -4,22 +4,22 @@
   flex-direction: column;
   overflow: hidden; 
   border-radius: 16px; 
-  background: #1e2a24; 
+  background: var(--surface-card, #1e2a24); 
   box-shadow: 0 10px 25px rgba(0,0,0,.15); 
   transition: transform .22s ease, box-shadow .25s ease; 
   max-width: 400px;
-  border: 1px solid rgba(255,255,255,0.14);
+  border: 1px solid var(--surface-border, rgba(255,255,255,0.14));
 }
 
 /* Estilos para anuncios destacados */
 .premium-card.is-featured {
-  border: 2px solid rgba(255, 192, 123, 0.6); /* Color #FFC07B con transparencia */
-  background: radial-gradient(600px 60% at 10% 0%, rgba(255, 192, 123, .08) 0%, rgba(255,255,255,.02) 50%), #1e2a24;
+  border: 2px solid color-mix(in srgb, var(--color-accent) 62%, transparent);
+  background: radial-gradient(600px 60% at 10% 0%, rgba(255, 192, 123, .08) 0%, rgba(255,255,255,.02) 50%), var(--surface-card, #1e2a24);
   box-shadow: 0 12px 32px rgba(255, 192, 123, 0.15), 0 4px 16px rgba(0,0,0,.2);
 }
 
 .premium-card.is-featured:hover {
-  border-color: rgba(255, 192, 123, 0.8);
+  border-color: color-mix(in srgb, var(--color-accent) 82%, transparent);
   box-shadow: 0 16px 40px rgba(255, 192, 123, 0.2), 0 8px 20px rgba(0,0,0,.25);
 }
 
@@ -30,6 +30,18 @@
   height: 224px; /* h-56 en Tailwind = 224px */
   border-radius: 16px 16px 0 0;
   overflow: hidden;
+}
+
+.premium-card__media::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  background: linear-gradient(to bottom, rgba(18, 41, 31, 0) 0%, color-mix(in srgb, var(--surface-card, #1e2a24) 88%, transparent) 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* Slider de imágenes */
@@ -44,7 +56,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #FFC07B;
+  background: var(--color-accent);
   color: #1e2a24;
   padding: 4px 8px;
   border-radius: 12px;
@@ -88,36 +100,71 @@
 .premium-card__overlay { 
   position: absolute; 
   inset: 0; 
-  background: linear-gradient(to top, #1e2a24, transparent); 
+  background: linear-gradient(to top, rgba(18, 41, 31, 0.9), transparent); 
   pointer-events: none; 
+}
+
+body[data-mode='day'] .premium-card__overlay {
+  background: linear-gradient(
+    to top,
+    rgba(18, 41, 31, 0.82) 0%,
+    rgba(18, 41, 31, 0.56) 44%,
+    rgba(18, 41, 31, 0.18) 74%,
+    transparent 100%
+  );
 }
 
 .premium-card__content { 
   position: relative; 
-  padding: 1.5rem; 
-  background: #1e2a24;
-  color: white;
+  margin-top: 0;
+  padding: 1.5rem;
+  background: var(--surface-card, #1e2a24);
+  color: var(--color-text, white);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  z-index: 3;
+}
+
+.premium-card__content::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -22px;
+  height: 22px;
+  background: linear-gradient(180deg, rgba(18, 41, 31, 0) 0%, var(--surface-card, #1e2a24) 100%);
+  pointer-events: none;
 }
 
 .premium-card__title { 
   position: absolute;
-  bottom: -30px; /* Movido más abajo */
+  bottom: 18px;
   left: 0;
   right: 0;
-  padding: 1.5rem;
+  padding: 0 1.5rem;
   font-family: 'Playfair Display', serif; 
   font-weight: 700; 
   font-size: 2.25rem; /* text-4xl */
-  line-height: 1.1; 
+  line-height: 1.02;
   margin: 0; 
-  color: #f7e9d7; 
+  color: var(--color-accent); 
   z-index: 10;
   pointer-events: none;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+body[data-mode='day'] .premium-card__title {
+  color: color-mix(in srgb, var(--color-accent) 62%, white 38%);
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+  -webkit-text-stroke: 0.35px rgba(18, 41, 31, 0.45);
 }
 
 .premium-card__subtitle {
   font-size: 1.125rem; /* text-lg */
-  color: #d1d5db; /* text-gray-300 */
+  color: var(--text-muted, #d1d5db);
   margin: 0 0 1.5rem 0;
   line-height: 1.5;
 }
@@ -132,8 +179,8 @@
 
 .premium-card__badge { 
   display: inline-block;
-  background: #384c42; 
-  color: #d1d5db; 
+  background: var(--surface-soft, #384c42); 
+  color: var(--text-muted, #d1d5db); 
   border: none;
   border-radius: 9999px; /* rounded-full */
   padding: 0.5rem 1rem; 
@@ -143,7 +190,7 @@
 }
 
 .premium-card__badge:hover { 
-  background: #4a5d50; 
+  background: rgba(255,255,255,.08); 
   transform: none;
 }
 
@@ -156,7 +203,7 @@
   display: inline-flex; 
   align-items: center; 
   gap: 0.5rem; 
-  color: #FFC07B; 
+  color: var(--color-accent); 
   font-weight: 600; 
   font-size: 1.125rem; /* text-lg */
   text-decoration: none; 
@@ -184,6 +231,7 @@
   .premium-card__media { height: 280px; }
   .premium-card__content { padding: 1.5rem; }
   .premium-card__title { 
+    bottom: 22px;
     font-size: 2.5rem; /* Slightly larger on desktop */
   }
 }

@@ -6,7 +6,7 @@ import img4 from '../../assets/img/header_img_4.webp';
 import './headerBg.css';
 
 // Simple decorative blurred background using the 4 images layered.
-export const HeaderBg = () => {
+export const HeaderBg = ({ mode = 'bar' }) => {
   const images = [img1, img2, img3, img4];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -19,7 +19,7 @@ export const HeaderBg = () => {
   }, [images.length]);
 
   return (
-    <div className="header-bg" aria-hidden="true">
+    <div className={`header-bg ${mode === 'day' ? 'day' : 'bar'}`} aria-hidden="true">
       {images.map((image, index) => (
         <img
           key={index}

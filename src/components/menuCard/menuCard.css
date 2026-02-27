@@ -18,6 +18,48 @@
   box-sizing: border-box;
   align-items: center; /* Center content horizontally */
 }
+
+.menu-card--priority {
+  border-color: color-mix(in srgb, var(--color-accent) 58%, transparent);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+}
+
+.menu-card-priority {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border-radius: 999px;
+  padding: .25rem .6rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  background: var(--color-accent);
+  color: #1B2D21;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 68%, #1B2D21 32%);
+}
+
+body[data-mode='day'] .menu-card {
+  background:
+    linear-gradient(160deg, rgba(243, 229, 207, 0.72) 0%, rgba(225, 208, 182, 0.58) 100%);
+  border: 1px solid rgba(27, 45, 33, 0.28);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  color: #1B2D21;
+  box-shadow: 0 14px 28px rgba(27, 45, 33, 0.2);
+}
+
+body[data-mode='day'] .menu-card--priority {
+  border-color: rgba(27, 45, 33, 0.34);
+  box-shadow: 0 12px 24px rgba(27, 45, 33, 0.18);
+}
+
+body[data-mode='day'] .menu-card-priority {
+  background: #1B2D21;
+  color: #F3E6D4;
+  border-color: rgba(243, 230, 212, 0.48);
+}
+
 .menu-card h2 { 
   font-family: var(--font-heading); 
   font-size: 1.7rem; 
@@ -26,6 +68,11 @@
   color: var(--color-accent); 
   font-weight: 500; 
 }
+
+body[data-mode='day'] .menu-card h2 {
+  color: #1B2D21;
+}
+
 .menu-card p { 
   font-family: var(--font-body); 
   font-size: 1rem; 
@@ -33,6 +80,11 @@
   margin: 0 0 1.5rem; 
   flex-grow: 1; 
   opacity: 0.9;
+}
+
+body[data-mode='day'] .menu-card p {
+  color: rgba(27, 45, 33, 0.86);
+  opacity: 1;
 }
 .menu-card button { 
   background: var(--color-accent); 
@@ -78,6 +130,11 @@
   font-size: 0.9rem;
   letter-spacing: 0.5px;
   transition: transform 0.2s ease;
+}
+
+body[data-mode='day'] .menu-card-cta {
+  background: #1B2D21;
+  color: #F3E6D4;
 }
 .menu-card.clickable:hover .menu-card-cta {
   transform: translateY(-2px);

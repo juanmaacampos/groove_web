@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react-swc'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Cambiado para dominio personalizado
+  base: process.env.NODE_ENV === 'production' ? '/groove-web-preview/' : '/',
   build: {
     minify: 'terser',
     terserOptions: {

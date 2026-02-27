@@ -1,12 +1,38 @@
-# React + Vite
+# Groove Web Preview
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sitio React + Vite listo para publicar en GitHub Pages del repo:
 
-Currently, two official plugins are available:
+- `https://github.com/juanmaacampos/groove-web-preview`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Deploy en GitHub Pages
 
-## Expanding the ESLint configuration
+1. Verifica el remoto:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+	```bash
+	git remote -v
+	```
+
+	Debe apuntar a:
+
+	- `https://github.com/juanmaacampos/groove-web-preview.git`
+
+2. Publica:
+
+	```bash
+	npm run deploy
+	```
+
+3. En GitHub, ve a **Settings → Pages** y configura:
+
+	- **Source**: `Deploy from a branch`
+	- **Branch**: `gh-pages`
+	- **Folder**: `/ (root)`
+
+4. URL esperada:
+
+	- `https://juanmaacampos.github.io/groove-web-preview/`
+
+## Notas
+
+- La base de Vite ya está configurada para este repo en producción: `/groove-web-preview/`.
+- El proyecto no usa `CNAME` en esta variante preview, para evitar conflictos con dominio personalizado.

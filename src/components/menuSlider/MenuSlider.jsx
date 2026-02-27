@@ -1,14 +1,50 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import MenuCard from '../menuCard/MenuCard.jsx';
 import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
 import { useGrooveMenus } from '../../utils/menuMapper.js';
 import './menuSlider.css';
 
-export const MenuSlider = ({ onSelect, onSlideChange }) => {
+const PRIORITY_TITLES = {
+  day: ['Cafeteria', 'Gluten Free'],
+  bar: ['Cena', 'Nuestros Cocteles']
+};
+
+const normalizeMenuTitle = (value = '') =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+export const MenuSlider = ({ onSelect, onSlideChange, mode = 'bar' }) => {
   const { menuSDK, isInitialized } = useFirebase();
   const { grooveMenus, loading, error } = useGrooveMenus(menuSDK);
-  // Obtener las keys de los menús disponibles (dinámico desde Firebase)
   const keys = Object.keys(grooveMenus);
+  const priorityTitles = mode === 'day' ? PRIORITY_TITLES.day : PRIORITY_TITLES.bar;
+
+  const orderedKeys = useMemo(() => {
+    if (keys.length === 0) return [];
+
+    const normalizedToKey = new Map();
+    keys.forEach((key) => {
+      const menuTitle = grooveMenus[key]?.title || key;
+      normalizedToKey.set(normalizeMenuTitle(menuTitle), key);
+    });
+
+    const prioritized = [];
+    const prioritizedSet = new Set();
+    priorityTitles.forEach((title) => {
+      const matchedKey = normalizedToKey.get(normalizeMenuTitle(title));
+      if (matchedKey) {
+        prioritized.push(matchedKey);
+        prioritizedSet.add(matchedKey);
+      }
+    });
+
+    const others = keys.filter((key) => !prioritizedSet.has(key));
+    return [...prioritized, ...others];
+  }, [keys, grooveMenus, priorityTitles]);
   
   // Estados siempre declarados al inicio
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -47,21 +83,27 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
     setTranslateX(newTranslateX);
   }, [currentIndex]);
   
-  // Efecto para establecer el elemento del medio cuando se cargan los menús
+  // Inicializar mostrando el primer menú priorizado
   useEffect(() => {
-    if (keys.length > 0 && !hasInitialized) {
-      const middleIndex = Math.floor(keys.length / 2);
-      setCurrentIndex(middleIndex);
+    if (orderedKeys.length > 0 && !hasInitialized) {
+      setCurrentIndex(0);
       setHasInitialized(true);
     }
-  }, [keys.length, hasInitialized]);
+  }, [orderedKeys.length, hasInitialized]);
+
+  // Al cambiar de modo, reiniciar al primer menú priorizado del modo activo
+  useEffect(() => {
+    if (orderedKeys.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [mode, orderedKeys.length]);
 
   // Efecto para notificar cambios de selección automática al componente padre
   useEffect(() => {
-    if (hasInitialized && onSlideChange && keys[currentIndex]) {
-      onSlideChange(keys[currentIndex]);
+    if (hasInitialized && onSlideChange && orderedKeys[currentIndex]) {
+      onSlideChange(orderedKeys[currentIndex]);
     }
-  }, [currentIndex, hasInitialized, onSlideChange, keys]);
+  }, [currentIndex, hasInitialized, onSlideChange, orderedKeys]);
   
   // Efecto para forzar recalculo cuando se inicializa
   useEffect(() => {
@@ -79,7 +121,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
     loading, 
     error, 
     menuSDKExists: !!menuSDK, 
-    keysLength: keys.length,
+    keysLength: orderedKeys.length,
     grooveMenus 
   });
 
@@ -126,7 +168,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
     if (Math.abs(currentDrag) > dragThreshold) {
       if (currentDrag < 0) {
         // Swiped left
-        setCurrentIndex(prev => Math.min(prev + 1, keys.length - 1));
+        setCurrentIndex(prev => Math.min(prev + 1, orderedKeys.length - 1));
       } else {
         // Swiped right
         setCurrentIndex(prev => Math.max(prev - 1, 0));
@@ -183,7 +225,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
     );
   }
 
-  if (keys.length === 0) {
+  if (orderedKeys.length === 0) {
     return (
       <div className="menu-carousel">
         <div className="carousel-loading">
@@ -199,7 +241,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
   };
 
   const goToNext = () => {
-    setCurrentIndex(prev => Math.min(prev + 1, keys.length - 1));
+    setCurrentIndex(prev => Math.min(prev + 1, orderedKeys.length - 1));
   };
 
   // Función para manejar click en slides inactivos
@@ -237,8 +279,13 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
         onTouchEnd={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
-        {keys.map((key, index) => {
+        {orderedKeys.map((key, index) => {
           const isActive = index === currentIndex;
+          const menuTitle = grooveMenus[key]?.title || key;
+          const isPriority = priorityTitles
+            .map(normalizeMenuTitle)
+            .includes(normalizeMenuTitle(menuTitle));
+
           return (
             <div
               key={key}
@@ -247,7 +294,12 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
               onClick={(e) => handleSlideClick(index, e)}
               style={{ cursor: isActive ? 'default' : 'pointer' }}
             >
-              <MenuCard type={key} menuData={grooveMenus[key]} onMore={isActive ? () => onSelect && onSelect(key) : undefined} />
+              <MenuCard
+                type={key}
+                menuData={grooveMenus[key]}
+                onMore={isActive ? () => onSelect && onSelect(key) : undefined}
+                isPriority={isPriority}
+              />
             </div>
           );
         })}
@@ -257,7 +309,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
       <button 
         className="carousel-nav-btn carousel-nav-btn--next"
         onClick={goToNext}
-        disabled={currentIndex === keys.length - 1}
+        disabled={currentIndex === orderedKeys.length - 1}
         aria-label="Menú siguiente"
       >
         <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -266,7 +318,7 @@ export const MenuSlider = ({ onSelect, onSlideChange }) => {
       </button>
 
       <div className="carousel-dots">
-        {keys.map((_, index) => (
+        {orderedKeys.map((_, index) => (
           <button
             key={index}
             className={`dot ${index === currentIndex ? 'active' : ''}`}

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import { useFirebase } from '../../firebase/FirebaseProvider.jsx';
 import { useGrooveMenus } from '../../utils/menuMapper.js';
 import { useMenuCategoriesLazy, useSmartCategoryExpansion } from '../../hooks/useLazyLoading.js';
@@ -12,7 +13,17 @@ import './menuDropdownOptimized.css';
  */
 
 // Componente de categoría optimizada con lazy loading
-const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick }) => {
+const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick, searchTerm }) => {
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredItems = useMemo(() => {
+    if (!normalizedSearch) return category.items;
+    return category.items.filter((item) =>
+      [item.name, item.desc, item.price]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(normalizedSearch))
+    );
+  }, [category.items, normalizedSearch]);
+
   const handleToggle = () => {
     onToggle(category.id);
   };
@@ -54,7 +65,7 @@ const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick }) =
       <div 
         className="md-cat-panel" 
         style={{ 
-          maxHeight: isOpen ? `${category.items.length * 128 + 24}px` : 0 
+          maxHeight: isOpen ? `${filteredItems.length * 128 + 24}px` : 0 
         }}
       >
         {isOpen && (
@@ -79,14 +90,14 @@ const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick }) =
                   Reintentar
                 </button>
               </li>
-            ) : category.items.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
               // Empty state
               <li className="md-item-empty">
-                <p>📭 No hay items en esta categoría</p>
+                <p>{normalizedSearch ? '🔎 No hay resultados en esta categoría' : '📭 No hay items en esta categoría'}</p>
               </li>
             ) : (
               // Items normales
-              category.items.map((item) => (
+              filteredItems.map((item) => (
                 <li key={item.id} className="md-item">
                   <div className="md-item-media">
                     <img 
@@ -146,7 +157,7 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
   } = useMenuCategoriesLazy(menuSDK, menuType);
   
   // Hook para gestión inteligente de expansión
-  const { toggleCategory, isCategoryExpanded } = useSmartCategoryExpansion(
+  const { toggleCategory } = useSmartCategoryExpansion(
     categories, 
     loadCategoryItems, 
     menuType
@@ -157,6 +168,22 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [hasScrolledToMenu, setHasScrolledToMenu] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const visibleCategories = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    if (!normalizedSearch) return categories;
+
+    return categories.filter((category) => {
+      const categoryMatch = category.name?.toLowerCase().includes(normalizedSearch);
+      const itemMatch = category.items?.some((item) =>
+        [item.name, item.desc, item.price]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(normalizedSearch))
+      );
+      return categoryMatch || itemMatch;
+    });
+  }, [categories, searchTerm]);
 
   // Información del menú
   const menuInfo = useMemo(() => {
@@ -171,6 +198,7 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
   useEffect(() => {
     setOpenCat(null);
     setHasScrolledToMenu(false); // Reset scroll flag when menu changes
+    setSearchTerm('');
   }, [menuType]);
 
   // Auto-scroll cuando se cargan las categorías (solo la primera vez para cada menú y si autoScroll está habilitado)
@@ -303,9 +331,24 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
     <section ref={sectionRef} className="menu-dropdown">
       <div className="md-container">
         <h2 className="md-title">{menuInfo?.title || 'Menú'}</h2>
+
+        <div className="md-search" role="search" aria-label="Búsqueda instantánea del menú">
+          <div className="md-search__control">
+            <FaSearch className="md-search__icon" aria-hidden="true" />
+            <input
+              id="menu-search"
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Buscar en el menú"
+              aria-label="Buscar en el menú"
+              className="md-search__input"
+            />
+          </div>
+        </div>
         
         <div className="md-list">
-          {categories.map(category => (
+          {visibleCategories.map(category => (
             <LazyCategory
               key={category.id}
               category={category}
@@ -313,8 +356,15 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
               isLoading={category.loading}
               onToggle={handleToggleCategory}
               onImageClick={handleImageClick}
+              searchTerm={searchTerm}
             />
           ))}
+
+          {searchTerm.trim() && visibleCategories.length === 0 && (
+            <div className="md-search-empty">
+              <p>Sin resultados para “{searchTerm}”. Probá con otra palabra clave.</p>
+            </div>
+          )}
         </div>
       </div>
       

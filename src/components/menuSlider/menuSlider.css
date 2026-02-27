@@ -36,6 +36,19 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
+body[data-mode='day'] .carousel-nav-btn {
+  border: 2px solid rgba(27, 45, 33, 0.22);
+  background: rgba(248, 236, 219, 0.82);
+  color: #1B2D21;
+  box-shadow: 0 8px 24px rgba(27, 45, 33, 0.22);
+}
+
+body[data-mode='day'] .carousel-nav-btn:hover:not(:disabled) {
+  background: rgba(241, 223, 197, 0.95);
+  border-color: #1B2D21;
+  color: #1B2D21;
+}
+
 .carousel-nav-btn:hover:not(:disabled) {
   background: rgba(18, 41, 31, 0.95);
   border-color: var(--color-accent);
@@ -123,9 +136,17 @@
   padding: 0;
 }
 
+body[data-mode='day'] .dot {
+  background: rgba(27, 45, 33, 0.34);
+}
+
 .dot.active {
   background: var(--color-accent);
   transform: scale(1.2);
+}
+
+body[data-mode='day'] .dot.active {
+  background: #1B2D21;
 }
 
 @media (min-width: 640px) {

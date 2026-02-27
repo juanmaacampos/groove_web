@@ -12,6 +12,30 @@
   --md-border: rgba(255,255,255,0.08);
 }
 
+body[data-mode='day'] {
+  --md-bg: #D7C1A2;
+  --md-fg: #1B2D21;
+  --md-muted: rgba(27, 45, 33, 0.78);
+  --md-accent: #B17741;
+  --md-card: rgba(236, 220, 197, 0.8);
+  --md-item-bg: rgba(232, 215, 190, 0.82);
+  --md-border: rgba(27, 45, 33, 0.2);
+}
+
+body[data-mode='day'] .menu-dropdown {
+  background: linear-gradient(180deg, #DCC8AB 0%, #D1BA99 100%);
+}
+
+body[data-mode='bar'] {
+  --md-bg: #0c0c0c;
+  --md-fg: #f3f3f0;
+  --md-muted: #b5b5b0;
+  --md-accent: #f1d29a;
+  --md-card: rgba(18, 41, 31, 0.72);
+  --md-item-bg: rgba(18, 41, 31, 0.85);
+  --md-border: rgba(255,255,255,0.08);
+}
+
 .menu-dropdown {
   background: var(--md-bg);
   color: var(--md-fg);
@@ -39,6 +63,69 @@
   line-height: 0.9;
 }
 
+.md-search {
+  margin-bottom: 22px;
+  display: grid;
+  gap: 8px;
+}
+
+.md-search__control {
+  position: relative;
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 20%, transparent), color-mix(in srgb, var(--md-card) 92%, transparent));
+  padding: 2px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.md-search__icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--md-muted);
+  pointer-events: none;
+  font-size: 15px;
+}
+
+.md-search__input {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--md-border));
+  border-radius: 999px;
+  background: var(--md-card);
+  color: var(--md-fg);
+  padding: 13px 16px 13px 42px;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.md-search__input:focus {
+  border-color: var(--color-accent, #FFC07B);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 32%, transparent);
+}
+
+body[data-mode='day'] .md-search__control {
+  background: linear-gradient(90deg, rgba(27, 45, 33, 0.26), rgba(27, 45, 33, 0.08));
+  box-shadow: 0 10px 22px rgba(27, 45, 33, 0.18);
+}
+
+body[data-mode='day'] .md-search__icon {
+  color: rgba(27, 45, 33, 0.78);
+}
+
+body[data-mode='day'] .md-search__input {
+  border-color: rgba(27, 45, 33, 0.38);
+  background: rgba(248, 239, 226, 0.95);
+}
+
+body[data-mode='day'] .md-search__input:focus {
+  border-color: #1B2D21;
+  box-shadow: 0 0 0 3px rgba(27, 45, 33, 0.26);
+}
+
+.md-search__input::placeholder {
+  color: var(--md-muted);
+}
+
 .md-stats {
   color: var(--md-muted);
   font-size: 12px;
@@ -50,6 +137,18 @@
 .md-list {
   display: grid;
   gap: 12px;
+}
+
+.md-search-empty {
+  text-align: center;
+  color: var(--md-muted);
+  border: 1px dashed var(--md-border);
+  border-radius: 12px;
+  padding: 18px 14px;
+}
+
+.md-search-empty p {
+  margin: 0;
 }
 
 /* CATEGORÍAS OPTIMIZADAS - MISMO ESTILO QUE ORIGINAL */
@@ -440,11 +539,11 @@
   }
 }
 
-/* Estilos para el modal de imagen - IGUAL QUE ORIGINAL */
-.image-modal .modal-content {
+/* Estilos para el modal de imagen */
+.modal-content.image-modal {
   max-width: 90vw;
   max-height: 90vh;
-  background: var(--md-brand-green);
+  background: rgba(18, 41, 31, 0.94);
   border: 2px solid var(--color-accent, #FFC07B);
 }
 
@@ -490,6 +589,42 @@
   line-height: 1.5;
   color: var(--md-muted);
   margin: 0;
+}
+
+body[data-mode='day'] .modal-content.image-modal {
+  background: linear-gradient(180deg, rgba(240, 226, 205, 0.97) 0%, rgba(232, 216, 195, 0.97) 100%);
+  border-color: #1B2D21;
+  box-shadow: 0 20px 48px rgba(27, 45, 33, 0.22);
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-close {
+  background: rgba(27, 45, 33, 0.92);
+  color: #F3E6D4;
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-close:hover {
+  background: #1B2D21;
+  color: #ffffff;
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-enlarged-image {
+  box-shadow: 0 10px 28px rgba(27, 45, 33, 0.2);
+}
+
+body[data-mode='day'] .modal-content.image-modal .image-modal-info {
+  color: #1B2D21;
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-item-name {
+  color: #1B2D21;
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-item-price {
+  color: #B17741;
+}
+
+body[data-mode='day'] .modal-content.image-modal .modal-item-desc {
+  color: rgba(27, 45, 33, 0.78);
 }
 
 @media (min-width: 768px) {
