@@ -17,10 +17,10 @@
 
 .header-bg.day .bg-overlay {
 	background:
-		radial-gradient(circle at 55% 42%, rgba(27, 45, 33, 0.14), rgba(27, 45, 33, 0.08) 45%, rgba(27, 45, 33, 0.52) 100%),
-		linear-gradient(180deg, rgba(27, 45, 33, 0.06) 0%, rgba(27, 45, 33, 0.32) 100%);
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
+		radial-gradient(circle at 55% 42%, rgba(27, 45, 33, 0.30), rgba(27, 45, 33, 0.22) 45%, rgba(27, 45, 33, 0.65) 100%),
+		linear-gradient(180deg, rgba(27, 45, 33, 0.20) 0%, rgba(27, 45, 33, 0.48) 100%);
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
 }
 
 @keyframes bgOverlayIn {

@@ -32,7 +32,6 @@ export const Header = ({ onSelect, onSlideChange, mode = 'bar' }) => {
                     'cafés',
                     'brunch',
                     'meriendas',
-                    'desayunos',
                     'algo fresco'
                   ]
                 : [

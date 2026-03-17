@@ -207,3 +207,38 @@
     min-width: 220px;
   }
 }
+
+/* ===== Day mode overrides ===== */
+body[data-mode='day'] .event-reservation__chip {
+  background: rgba(27, 45, 33, 0.07);
+  border-color: rgba(27, 45, 33, 0.18);
+}
+
+body[data-mode='day'] .event-reservation__card {
+  background: #F5EDE0;
+  border-color: rgba(27, 45, 33, 0.15);
+  box-shadow: 0 2px 12px rgba(27, 45, 33, 0.08);
+}
+
+body[data-mode='day'] .event-form input,
+body[data-mode='day'] .event-form select,
+body[data-mode='day'] .event-form textarea {
+  background: #EFE3D0;
+  border-color: rgba(27, 45, 33, 0.2);
+  color: #1B2D21;
+}
+
+body[data-mode='day'] .event-form input::placeholder,
+body[data-mode='day'] .event-form textarea::placeholder {
+  color: rgba(27, 45, 33, 0.45);
+}
+
+body[data-mode='day'] .event-form select option {
+  background: #EFE3D0;
+  color: #1B2D21;
+}
+
+body[data-mode='day'] .event-form__whatsapp {
+  border-color: rgba(27, 45, 33, 0.22);
+  color: #1B2D21;
+}

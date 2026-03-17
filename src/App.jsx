@@ -13,6 +13,8 @@ import TopButton from './components/topButton/TopButton.jsx';
 import ModeTestControl from './components/ModeTestControl/ModeTestControl.jsx';
 import { useFeaturedModal } from './hooks/useFeaturedModal.js';
 import { useAnnouncementsOptimized } from './firebase/useMenuOptimized.js';
+import LandingModal from './components/LandingModal/LandingModal.jsx';
+import Navbar from './components/Navbar/Navbar.jsx';
 import { MenuSDK } from './firebase/menuSDK.js';
 import { MENU_CONFIG } from './firebase/config.js';
 
@@ -93,10 +95,13 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
   
   // Use the featured modal hook
   const { isModalOpen, featuredAnnouncement, closeModal } = useFeaturedModal(announcements);
+
+  // Landing nav modal — visible on load, FeaturedModal (z-index 1000) sits on top
+  const [showLanding, setShowLanding] = useState(true);
   
   return (
     <div className="app-shell" data-mode={visualMode}>
-      <div className="web-test-badge" aria-label="Aviso de entorno de prueba">Web Test</div>
+      <Navbar />
       <Header onSelect={onSelectMenu} onSlideChange={onSlideChange} mode={visualMode} />
 
       {/* Mostrar dropdown para el slide activo (automático) o el menú seleccionado manualmente */}
@@ -114,6 +119,13 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
       <Info />
       <Footer />
       
+      {/* Landing nav modal (z-index 900) — FeaturedModal sits on top at z-index 1000 */}
+      <LandingModal
+        open={showLanding}
+        onClose={() => setShowLanding(false)}
+        visualMode={visualMode}
+      />
+
       {/* Featured Announcement Modal */}
       <FeaturedModal 
         isOpen={isModalOpen}

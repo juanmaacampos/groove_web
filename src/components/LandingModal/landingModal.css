@@ -1,0 +1,114 @@
+.landing-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  transition: background 0.35s ease;
+  animation: lm-fade-in 0.4s ease-out both;
+}
+
+/* Reuse the HeaderBg positioning — it already covers its parent absolutely */
+.landing-modal .header-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.landing-modal__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.landing-modal__logo {
+  width: clamp(140px, 40vw, 220px);
+  filter: drop-shadow(0 2px 18px rgba(255, 192, 123, 0.25));
+}
+
+.landing-modal__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.landing-modal__btn {
+  background: rgba(18, 41, 31, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 4vw, 1.25rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 1.1rem 1.75rem;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+body[data-mode='day'] .landing-modal__btn {
+  background: linear-gradient(160deg, rgba(243, 229, 207, 0.72) 0%, rgba(225, 208, 182, 0.58) 100%);
+  border-color: rgba(27, 45, 33, 0.28);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  color: #1b2d21;
+  box-shadow: 0 6px 16px rgba(27, 45, 33, 0.12);
+}
+
+.landing-modal__btn-icon {
+  font-size: 1.5em;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.landing-modal__btn:hover,
+.landing-modal__btn:focus-visible {
+  background: rgba(255, 192, 123, 0.1);
+  border-color: color-mix(in srgb, var(--color-accent) 58%, transparent);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+body[data-mode='day'] .landing-modal__btn:hover,
+body[data-mode='day'] .landing-modal__btn:focus-visible {
+  background: linear-gradient(160deg, rgba(243, 229, 207, 0.88) 0%, rgba(225, 208, 182, 0.76) 100%);
+  border-color: rgba(27, 45, 33, 0.42);
+  box-shadow: 0 10px 24px rgba(27, 45, 33, 0.2);
+}
+
+.landing-modal__btn:active {
+  transform: translateY(0);
+}
+
+.landing-modal__btn:active {
+  transform: translateY(0);
+}
+
+@keyframes lm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (max-width: 400px) {
+  .landing-modal__inner {
+    gap: 2rem;
+  }
+}

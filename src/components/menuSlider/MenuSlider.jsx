@@ -65,17 +65,26 @@ export const MenuSlider = ({ onSelect, onSlideChange, mode = 'bar' }) => {
       return;
     }
     const carouselWidth = carouselRef.current.offsetWidth;
-    const trackWidth = trackRef.current.scrollWidth;
     const activeSlide = slidesRef.current[currentIndex];
+    const firstSlide = slidesRef.current[0];
+    const lastSlide = slidesRef.current[slidesRef.current.length - 1];
+
+    if (!firstSlide || !lastSlide) {
+      return;
+    }
+
     const slideOffsetLeft = activeSlide.offsetLeft;
     const slideWidth = activeSlide.offsetWidth;
+    const activeSlideCenter = slideOffsetLeft + (slideWidth / 2);
+    const firstSlideCenter = firstSlide.offsetLeft + (firstSlide.offsetWidth / 2);
+    const lastSlideCenter = lastSlide.offsetLeft + (lastSlide.offsetWidth / 2);
     
-    // Calcular la posición ideal para centrar el slide
-    let newTranslateX = (carouselWidth / 2) - (slideOffsetLeft + slideWidth / 2);
+    // Calcular la posición ideal para centrar el slide activo.
+    let newTranslateX = (carouselWidth / 2) - activeSlideCenter;
     
-    // Aplicar límites para evitar scroll horizontal
-    const maxTranslateX = 0; // No puede ir más a la derecha del inicio
-    const minTranslateX = Math.min(0, carouselWidth - trackWidth); // No puede ir más a la izquierda
+    // Permitir que el primer y último slide también puedan quedar centrados.
+    const maxTranslateX = (carouselWidth / 2) - firstSlideCenter;
+    const minTranslateX = (carouselWidth / 2) - lastSlideCenter;
     
     // Limitar el translateX a los bounds válidos
     newTranslateX = Math.max(minTranslateX, Math.min(maxTranslateX, newTranslateX));

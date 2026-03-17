@@ -15,16 +15,12 @@ const EventReservation = ({ visualMode }) => {
   };
 
   return (
-    <section className="event-reservation" aria-label="Reserva de eventos">
+    <section id="reservas" className="event-reservation" aria-label="Reserva de eventos">
       <div className="event-reservation__inner">
         <div className="event-reservation__intro">
-          <span className="event-reservation__chip">Reservas para eventos</span>
+       
           <h2>Reservá tu lugar para tu próximo evento</h2>
-          <p>
-            {visualMode === 'day'
-              ? 'Ideal para meriendas, encuentros y celebraciones de tarde. Respuesta en menos de 24 hs.'
-              : 'Ideal para cumpleaños nocturnos, afters y eventos sociales. Respuesta en menos de 24 hs.'}
-          </p>
+         
         </div>
 
         <div className="event-reservation__card">

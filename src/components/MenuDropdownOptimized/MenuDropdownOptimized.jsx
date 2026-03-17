@@ -15,14 +15,17 @@ import './menuDropdownOptimized.css';
 // Componente de categoría optimizada con lazy loading
 const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick, searchTerm }) => {
   const normalizedSearch = searchTerm.trim().toLowerCase();
+  const categoryNameMatches = normalizedSearch && category.name?.toLowerCase().includes(normalizedSearch);
   const filteredItems = useMemo(() => {
     if (!normalizedSearch) return category.items;
+    // If the category name itself matches the search, show all its items
+    if (categoryNameMatches) return category.items;
     return category.items.filter((item) =>
       [item.name, item.desc, item.price]
         .filter(Boolean)
         .some((field) => field.toLowerCase().includes(normalizedSearch))
     );
-  }, [category.items, normalizedSearch]);
+  }, [category.items, normalizedSearch, categoryNameMatches]);
 
   const handleToggle = () => {
     onToggle(category.id);
@@ -65,7 +68,7 @@ const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick, sea
       <div 
         className="md-cat-panel" 
         style={{ 
-          maxHeight: isOpen ? `${filteredItems.length * 128 + 24}px` : 0 
+          maxHeight: isOpen ? `${(category.loading ? (category.itemCount || filteredItems.length) : filteredItems.length) * 128 + 24}px` : 0 
         }}
       >
         {isOpen && (
@@ -340,8 +343,8 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Buscar en el menú"
-              aria-label="Buscar en el menú"
+              placeholder={`Buscar en ${menuInfo?.title || 'el menú'}`}
+              aria-label={`Buscar en ${menuInfo?.title || 'el menú'}`}
               className="md-search__input"
             />
           </div>
