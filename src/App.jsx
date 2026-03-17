@@ -15,11 +15,9 @@ import { useFeaturedModal } from './hooks/useFeaturedModal.js';
 import { useAnnouncementsOptimized } from './firebase/useMenuOptimized.js';
 import LandingModal from './components/LandingModal/LandingModal.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
-import { MenuSDK } from './firebase/menuSDK.js';
-import { MENU_CONFIG } from './firebase/config.js';
+import { useFirebase } from './firebase/FirebaseProvider.jsx';
+import { useBusinessInfo } from './firebase/useMenu.js';
 
-// Initialize Firebase SDK
-const menuSDK = new MenuSDK(MENU_CONFIG.firebaseConfig, MENU_CONFIG.businessId);
 const DAY_MODE_START_HOUR = 7;
 const DAY_MODE_END_HOUR = 19;
 
@@ -57,6 +55,8 @@ function App() {
 function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, manualClickKey }) {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [manualMode, setManualMode] = useState(null);
+  const { menuSDK } = useFirebase();
+  const { business } = useBusinessInfo(menuSDK);
 
   useEffect(() => {
     const intervalId = setInterval(() => setCurrentTime(new Date()), 60 * 1000);
@@ -116,7 +116,7 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
       <BodyAds />
       <Reviews visualMode={visualMode} />
       <EventReservation visualMode={visualMode} />
-      <Info />
+      <Info businessHours={business?.businessHours} />
       <Footer />
       
       {/* Landing nav modal (z-index 900) — FeaturedModal sits on top at z-index 1000 */}

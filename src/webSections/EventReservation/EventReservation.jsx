@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FaWhatsapp } from 'react-icons/fa';
-import { WHATSAPP_LINK } from '../../config/socials.js';
+import { useBusinessContact } from '../../hooks/useBusinessContact.js';
+import { buildEventReservationMessage, buildWhatsAppLink } from '../../utils/whatsapp.js';
 import './eventReservation.css';
 
 const EVENT_TYPES = ['Cumpleaños', 'Evento empresarial', 'Reunión social', 'After office', 'Otro'];
@@ -8,9 +8,24 @@ const SLOTS = ['Tarde', 'Noche'];
 
 const EventReservation = ({ visualMode }) => {
   const [submitted, setSubmitted] = useState(false);
+  const { contactPhone, whatsAppHref, isInitialized } = useBusinessContact();
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const reservationData = {
+      fullName: formData.get('fullName')?.toString().trim(),
+      phone: formData.get('phone')?.toString().trim(),
+      eventType: formData.get('eventType')?.toString().trim(),
+      eventDate: formData.get('eventDate')?.toString().trim(),
+      guests: formData.get('guests')?.toString().trim(),
+      slot: formData.get('slot')?.toString().trim(),
+      message: formData.get('message')?.toString().trim(),
+    };
+    const message = buildEventReservationMessage(reservationData);
+    const submitLink = buildWhatsAppLink(contactPhone, message) || whatsAppHref;
+
+    window.open(submitLink, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   };
 
@@ -74,11 +89,9 @@ const EventReservation = ({ visualMode }) => {
               </label>
 
               <div className="event-form__actions">
-                <button type="submit" className="event-form__submit">Enviar solicitud</button>
-                <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer noopener" className="event-form__whatsapp">
-                  <FaWhatsapp aria-hidden="true" />
-                  Consultar por WhatsApp
-                </a>
+                <button type="submit" className="event-form__submit" disabled={!whatsAppHref && isInitialized}>
+                  Enviar por WhatsApp
+                </button>
               </div>
             </form>
           ) : (

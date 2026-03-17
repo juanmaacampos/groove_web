@@ -1,14 +1,40 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './info.css';
 import { FaMapMarkerAlt, FaWhatsapp, FaInstagram, FaClock } from 'react-icons/fa';
-import { WHATSAPP_LINK, WHATSAPP_DISPLAY, INSTAGRAM_CAFE, INSTAGRAM_PAN } from '../../config/socials.js';
+import { INSTAGRAM_CAFE, INSTAGRAM_PAN } from '../../config/socials.js';
+import { useBusinessContact } from '../../hooks/useBusinessContact.js';
 
 const MAP_QUERY = encodeURIComponent('Av. Int. Jorge Ruben Varela 512, B7223 Campana, Provincia de Buenos Aires');
 const MAP_EMBED = `https://www.google.com/maps?q=${MAP_QUERY}&output=embed`;
+const FALLBACK_HOURS = [
+  { fromDay: 'Lun', toDay: 'Sab', openTime: '15:30', closeTime: '00:00' }
+];
 
-const Info = () => {
+const formatDayRange = ({ fromDay, toDay }) => {
+  if (!fromDay) {
+    return null;
+  }
+
+  if (!toDay || fromDay === toDay) {
+    return fromDay;
+  }
+
+  return `${fromDay} a ${toDay}`;
+};
+
+const getHoursToRender = (businessHours) => {
+  if (!Array.isArray(businessHours) || businessHours.length === 0) {
+    return FALLBACK_HOURS;
+  }
+
+  return businessHours.filter((entry) => entry?.fromDay && entry?.openTime && entry?.closeTime);
+};
+
+const Info = ({ businessHours }) => {
   const sectionRef = useRef(null);
   const [entered, setEntered] = useState(false);
+  const hoursToRender = getHoursToRender(businessHours);
+  const { contactPhone, whatsAppHref } = useBusinessContact();
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -51,8 +77,8 @@ const Info = () => {
               <div className="info-item__icon" aria-hidden="true"><FaWhatsapp /></div>
               <div className="info-item__content">
                 <h3 className="info-item__title">WhatsApp</h3>
-                <p className="info-item__text">{WHATSAPP_DISPLAY}</p>
-                <a className="info-item__link" href={WHATSAPP_LINK} target="_blank" rel="noreferrer noopener">
+                <p className="info-item__text">{contactPhone}</p>
+                <a className="info-item__link" href={whatsAppHref} target="_blank" rel="noreferrer noopener">
                   Escribinos por WhatsApp
                 </a>
               </div>
@@ -78,7 +104,15 @@ const Info = () => {
               <div className="info-item__content">
                 <h3 className="info-item__title">Horarios</h3>
                 <ul className="info-hours">
-                  <li><strong>Lun a Sab:</strong> 15:30 – 00:00</li>
+                  {hoursToRender.map((entry, index) => {
+                    const dayRange = formatDayRange(entry);
+
+                    return (
+                      <li key={`${entry.fromDay}-${entry.toDay || entry.fromDay}-${entry.openTime}-${index}`}>
+                        <strong>{dayRange}:</strong> {entry.openTime} – {entry.closeTime}
+                      </li>
+                    );
+                  })}
                 </ul>
                 <p className="info-item__note">Reservas y eventos: escribinos y coordinamos tu fecha.</p>
               </div>

@@ -4,6 +4,76 @@ import { useState, useEffect } from 'react';
  * 🍽️ HOOKS PARA GROOVE - Gestión de menús con Firebase
  */
 
+export function useBusinessInfo(menuSDK, options = {}) {
+  const [business, setBusiness] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!menuSDK) {
+      setLoading(false);
+      return undefined;
+    }
+
+    let isMounted = true;
+    let unsubscribe = null;
+    const enableRealtime = options.enableRealtime !== false;
+
+    const handleBusinessUpdate = (businessData, updateError) => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (updateError) {
+        setError(updateError.message);
+        setLoading(false);
+        return;
+      }
+
+      setBusiness(businessData);
+      setError(null);
+      setLoading(false);
+    };
+
+    async function loadBusiness() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (enableRealtime && typeof menuSDK.onBusinessInfoChange === 'function') {
+          unsubscribe = menuSDK.onBusinessInfoChange(handleBusinessUpdate);
+          return;
+        }
+
+        const businessData = await menuSDK.getBusinessInfo();
+        handleBusinessUpdate(businessData, null);
+      } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
+        setError(err.message);
+        setLoading(false);
+      }
+    }
+
+    loadBusiness();
+
+    return () => {
+      isMounted = false;
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [menuSDK, options.enableRealtime]);
+
+  return {
+    business,
+    loading,
+    error
+  };
+}
+
 /**
  * 📋 Hook principal para usar el menú
  */

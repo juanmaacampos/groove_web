@@ -2,11 +2,12 @@ import React from 'react';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
 import './footer.css';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
-import { WHATSAPP_LINK, INSTAGRAM_CAFE } from '../../config/socials.js';
+import { INSTAGRAM_CAFE } from '../../config/socials.js';
+import { useBusinessContact } from '../../hooks/useBusinessContact.js';
 
 const Footer = () => {
   const year = new Date().getFullYear();
-  // Links centralizados en config/socials.js
+  const { whatsAppHref } = useBusinessContact();
 
   return (
     <footer className="site-footer" role="contentinfo">
@@ -28,7 +29,7 @@ const Footer = () => {
             <FaInstagram aria-hidden="true" />
           </a>
           <a
-            href={WHATSAPP_LINK}
+            href={whatsAppHref}
             target="_blank"
             rel="noreferrer noopener"
             title="WhatsApp"
