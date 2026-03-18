@@ -53,6 +53,39 @@
   gap: 1rem;
 }
 
+.event-form__mode-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.event-form__mode-button {
+  min-height: 54px;
+  border-radius: 14px;
+  border: 1px solid var(--surface-border, rgba(255,255,255,0.2));
+  background: color-mix(in srgb, var(--surface-soft, rgba(255,255,255,0.04)) 90%, transparent);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  padding: .9rem 1rem;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease, color .2s ease;
+}
+
+.event-form__mode-button:hover,
+.event-form__mode-button:focus-visible {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, var(--surface-border, rgba(255,255,255,0.2)));
+  outline: none;
+}
+
+.event-form__mode-button--active {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
 .event-form__grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -126,6 +159,19 @@
 .event-form input::placeholder,
 .event-form textarea::placeholder {
   color: var(--text-muted, rgba(255,255,255,0.68));
+}
+
+body[data-mode='bar'] .event-form select {
+  color-scheme: dark;
+}
+
+body[data-mode='bar'] .event-form select option {
+  background: #183528;
+  color: #FFFFFF;
+}
+
+body[data-mode='bar'] .event-form select option:disabled {
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .event-form__full {
@@ -218,6 +264,18 @@ body[data-mode='day'] .event-form textarea {
   background: #EFE3D0;
   border-color: rgba(27, 45, 33, 0.2);
   color: #1B2D21;
+}
+
+body[data-mode='day'] .event-form__mode-button {
+  background: rgba(177, 119, 65, 0.06);
+  border-color: rgba(27, 45, 33, 0.14);
+  color: #1B2D21;
+}
+
+body[data-mode='day'] .event-form__mode-button--active {
+  background: #B17741;
+  border-color: #B17741;
+  color: #F5EDE0;
 }
 
 body[data-mode='day'] .event-form input::placeholder,

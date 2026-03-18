@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { FaGoogle } from 'react-icons/fa';
 import { MdMenuBook, MdCampaign, MdEventAvailable, MdInfoOutline } from 'react-icons/md';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
 import HeaderBg from '../headerBg/HeaderBg.jsx';
@@ -6,7 +7,8 @@ import './landingModal.css';
 
 const NAV_ITEMS = [
   { label: 'Menú',               target: null,         Icon: MdMenuBook },
-  { label: 'Anuncios',           target: '#nosotros',  Icon: MdCampaign },
+  { label: 'Novedades',          target: '#nosotros',  Icon: MdCampaign },
+  { label: 'Reseñas',            target: '#resenas',   Icon: FaGoogle },
   { label: 'Reservas',           target: '#reservas',  Icon: MdEventAvailable },
   { label: 'Acerca de nosotros', target: '#info',      Icon: MdInfoOutline },
 ];

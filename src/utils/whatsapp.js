@@ -17,6 +17,16 @@ export function buildWhatsAppLink(phone, message = '') {
   return `https://api.whatsapp.com/send/?phone=${normalizedPhone}${textParam}&type=phone_number&app_absent=0`;
 }
 
+export function buildWaMeLink(phone) {
+  const normalizedPhone = normalizeWhatsAppPhone(phone);
+
+  if (!normalizedPhone) {
+    return '';
+  }
+
+  return `https://wa.me/${normalizedPhone}`;
+}
+
 const formatEventDate = (value) => {
   if (!value) {
     return 'Sin definir';
@@ -31,24 +41,29 @@ const formatEventDate = (value) => {
 };
 
 export function buildEventReservationMessage({
+  reservationMode,
   fullName,
   phone,
   eventType,
   eventDate,
   guests,
-  slot,
   message,
 }) {
+  const contactLink = buildWaMeLink(phone);
+  const isTableReservation = reservationMode === 'table';
   const lines = [
-    'Hola, quiero consultar por una reserva para un evento.',
+    isTableReservation ? 'Hola, quiero hacer una reserva de mesa.' : 'Hola, quiero consultar por un evento privado.',
     '',
+    `Tipo de solicitud: ${isTableReservation ? 'Reserva de mesa' : 'Evento privado'}`,
     `Nombre: ${fullName || 'No informado'}`,
-    `WhatsApp: ${phone || 'No informado'}`,
-    `Tipo de evento: ${eventType || 'No informado'}`,
+    `WhatsApp: ${contactLink || phone || 'No informado'}`,
     `Fecha estimada: ${formatEventDate(eventDate)}`,
     `Cantidad de personas: ${guests || 'No informada'}`,
-    `Franja horaria: ${slot || 'No informada'}`,
   ];
+
+  if (!isTableReservation) {
+    lines.splice(4, 0, `Tipo de evento: ${eventType || 'No informado'}`);
+  }
 
   if (message) {
     lines.push(`Comentario: ${message}`);

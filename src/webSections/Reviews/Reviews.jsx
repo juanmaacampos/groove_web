@@ -93,6 +93,7 @@ function ReviewAvatar({ src, name }) {
 const Reviews = ({ visualMode }) => {
   return (
     <section
+      id="resenas"
       className="reviews-section"
       data-mode={visualMode === 'day' ? 'day' : 'bar'}
       aria-label="Reseñas destacadas de Google Maps"
