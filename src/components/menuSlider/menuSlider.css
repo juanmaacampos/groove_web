@@ -24,7 +24,7 @@
   height: 42px;
   border-radius: 50%;
   border: 2px solid rgba(255, 192, 123, 0.3);
-  background: rgba(18, 41, 31, 0.85);
+  background: rgba(28, 54, 32, 0.85);
   color: var(--color-accent);
   cursor: pointer;
   display: flex;
@@ -50,7 +50,7 @@ body[data-mode='day'] .carousel-nav-btn:hover:not(:disabled) {
 }
 
 .carousel-nav-btn:hover:not(:disabled) {
-  background: rgba(18, 41, 31, 0.95);
+  background: rgba(28, 54, 32, 0.95);
   border-color: var(--color-accent);
   transform: translateY(-50%) scale(1.05);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);

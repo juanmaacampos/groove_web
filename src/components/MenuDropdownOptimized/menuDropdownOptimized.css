@@ -5,10 +5,10 @@
   --md-muted: #b5b5b0;
   --md-accent: #f1d29a; /* warm sand (kept for local price accent) */
   /* Brand tones (use global if present) */
-  --md-brand-green: var(--color-bg, #12291F);
+  --md-brand-green: var(--color-bg, #1C3620);
   /* Darker translucent surfaces based on brand green */
-  --md-card: rgba(18, 41, 31, 0.72); /* darker than #12291F with transparency */
-  --md-item-bg: rgba(18, 41, 31, 0.85);
+  --md-card: rgba(28, 54, 32, 0.72); /* darker than #1C3620 with transparency */
+  --md-item-bg: rgba(28, 54, 32, 0.85);
   --md-border: rgba(255,255,255,0.08);
 }
 
@@ -31,8 +31,8 @@ body[data-mode='bar'] {
   --md-fg: #f3f3f0;
   --md-muted: #b5b5b0;
   --md-accent: #f1d29a;
-  --md-card: rgba(18, 41, 31, 0.72);
-  --md-item-bg: rgba(18, 41, 31, 0.85);
+  --md-card: rgba(28, 54, 32, 0.72);
+  --md-item-bg: rgba(28, 54, 32, 0.85);
   --md-border: rgba(255,255,255,0.08);
 }
 
@@ -543,7 +543,7 @@ body[data-mode='day'] .md-search__input:focus {
 .modal-content.image-modal {
   max-width: 90vw;
   max-height: 90vh;
-  background: rgba(18, 41, 31, 0.94);
+  background: rgba(28, 54, 32, 0.94);
   border: 2px solid var(--color-accent, #FFC07B);
 }
 

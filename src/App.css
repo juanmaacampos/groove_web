@@ -1,9 +1,9 @@
 /* Design tokens */
 :root {
 	--color-accent: #FFC07B;
-	--color-bg: #12291F;
+	--color-bg: #1C3620;
 	--color-text: #FFFFFF;
-	--surface-card: rgba(18, 41, 31, 0.78);
+	--surface-card: rgba(28, 54, 32, 0.78);
 	--surface-soft: rgba(255, 255, 255, 0.04);
 	--surface-border: rgba(255, 255, 255, 0.14);
 	--text-muted: rgba(255, 255, 255, 0.72);
@@ -40,9 +40,9 @@ body[data-mode='day'] {
 
 body[data-mode='bar'] {
 	--color-accent: #FFC07B;
-	--color-bg: #12291F;
+	--color-bg: #1C3620;
 	--color-text: #FFFFFF;
-	--surface-card: rgba(18, 41, 31, 0.78);
+	--surface-card: rgba(28, 54, 32, 0.78);
 	--surface-soft: rgba(255, 255, 255, 0.04);
 	--surface-border: rgba(255, 255, 255, 0.14);
 	--text-muted: rgba(255, 255, 255, 0.72);

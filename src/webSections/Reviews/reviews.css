@@ -1,39 +1,14 @@
 .reviews-section {
   position: relative;
   overflow: hidden;
-  background: var(--color-bg);
+  background: transparent;
   color: var(--color-text);
   padding: clamp(2rem, 5vw, 3rem) 1rem;
 }
 
-.reviews-section::before,
-.reviews-section::after {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.reviews-section::before {
-  width: min(460px, 70vw);
-  height: min(460px, 70vw);
-  top: -180px;
-  left: -120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 70%);
-}
-
-.reviews-section::after {
-  width: min(420px, 60vw);
-  height: min(420px, 60vw);
-  right: -120px;
-  bottom: -200px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--surface-soft) 85%, transparent) 0%, transparent 72%);
-}
-
 .reviews__inner {
   position: relative;
+  isolation: isolate;
   z-index: 1;
   width: 100%;
   max-width: 1200px;
@@ -48,6 +23,20 @@
   box-shadow: 0 14px 30px rgba(0,0,0,0.16);
 }
 
+.reviews__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--color-accent) 18%, transparent) 0%, transparent 42%),
+    radial-gradient(circle at 82% 78%, color-mix(in srgb, var(--surface-soft) 88%, transparent) 0%, transparent 40%),
+    linear-gradient(160deg, color-mix(in srgb, var(--surface-card) 90%, transparent) 0%, color-mix(in srgb, var(--surface-soft) 80%, transparent) 100%);
+  opacity: 1;
+}
+
 .reviews-section[data-mode='day'] .reviews__inner {
   border-color: rgba(27, 45, 33, 0.17);
   border-top-color: rgba(27, 45, 33, 0.08);
@@ -55,6 +44,14 @@
     linear-gradient(180deg, rgba(255, 250, 242, 0.28) 0%, rgba(255, 250, 242, 0) 18%),
     linear-gradient(160deg, rgba(243, 232, 216, 0.86) 0%, rgba(232, 216, 195, 0.82) 100%);
   box-shadow: 0 14px 28px rgba(27, 45, 33, 0.14);
+}
+
+.reviews-section[data-mode='day'] .reviews__inner::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(213, 166, 96, 0.2) 0%, transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(243, 232, 216, 0.84) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(243, 232, 216, 0.88) 0%, rgba(232, 216, 195, 0.84) 100%);
+  opacity: .98;
 }
 
 .reviews__header {
@@ -97,7 +94,7 @@
 .review-card {
   border-radius: 14px;
   padding: 1rem;
-  background: var(--surface-card, rgba(18, 41, 31, 0.75));
+  background: var(--surface-card, rgba(28, 54, 32, 0.75));
   border: 1px solid var(--surface-border, rgba(255,255,255,0.12));
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
