@@ -1,4 +1,4 @@
-.body-ads { 
+.highlights-grid { 
 	position: relative; 
 	padding: clamp(1.5rem, 4vw, 2rem) 0 clamp(2.5rem, 6vw, 3rem); 
 	background: var(--color-bg); 
@@ -7,7 +7,7 @@
 	margin: 0;
 	display: block;
 }
-.body-ads__inner { 
+.highlights-grid__inner { 
 	width: 100%; 
 	max-width: 1200px; 
 	margin: 0 auto; 
@@ -19,13 +19,13 @@
 
 /* Mejorar el espaciado general en desktop */
 @media (min-width: 1024px) {
-	.body-ads {
+	.highlights-grid {
 		padding: clamp(2rem, 5vw, 4rem) 0 clamp(3rem, 7vw, 5rem);
 		background: var(--color-bg);
 		position: relative;
 	}
 	
-	.body-ads__inner {
+	.highlights-grid__inner {
 		max-width: 1400px;
 		padding: 0 2rem;
 		position: relative;
@@ -33,7 +33,7 @@
 	}
 	
 	/* Agregar un sutil efecto de fondo para desktop */
-	.body-ads::before {
+	.highlights-grid::before {
 		content: '';
 		position: absolute;
 		top: 0;
@@ -47,10 +47,10 @@
 }
 
 /* Optional section title (hidden for now) */
-.body-ads__title { display:none; }
+.highlights-grid__title { display:none; }
 
 /* spacing from header */
-.body-ads { margin-top: clamp(1rem, 3vw, 1.5rem); }
+.highlights-grid { margin-top: clamp(1rem, 3vw, 1.5rem); }
 
 /* Layout vertical simple - cards una abajo de la otra (mobile first) */
 .stack { 
@@ -177,18 +177,18 @@
 		grid-template-columns: repeat(3, 1fr);
 	}
 	
-	.body-ads__inner {
+	.highlights-grid__inner {
 		max-width: 1600px;
 		padding: 0 3rem;
 	}
 	
-	.body-ads {
+	.highlights-grid {
 		padding: clamp(2rem, 5vw, 4rem) 0 clamp(3rem, 7vw, 5rem);
 	}
 }
 
 /* Estados de carga para cuando no hay anuncios */
-.body-ads.no-announcements .stack-item.is-first {
+.highlights-grid.empty-state .stack-item.is-first {
 	animation: none;
 }
 
@@ -227,7 +227,7 @@
 }
 
 /* Estados de carga y sin anuncios */
-.no-announcements-message {
+.empty-state-message {
 	background: var(--color-bg-alt, #f8f9fa);
 	border: 2px dashed var(--color-border, #e0e0e0);
 	border-radius: 12px;
@@ -237,7 +237,7 @@
 	font-style: italic;
 }
 
-.announcements-loading {
+.grid-loading {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -246,7 +246,7 @@
 	text-align: center;
 }
 
-.announcements-loading .loading-spinner {
+.grid-loading .loading-spinner {
 	width: 40px;
 	height: 40px;
 	border: 3px solid rgba(255, 192, 123, 0.2);

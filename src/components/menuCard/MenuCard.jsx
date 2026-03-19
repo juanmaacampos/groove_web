@@ -1,6 +1,7 @@
 import React from 'react';
-import { FaCoffee, FaPizzaSlice, FaCocktail, FaLeaf, FaUtensils } from 'react-icons/fa';
+import { FaCoffee, FaPizzaSlice, FaCocktail, FaUtensils } from 'react-icons/fa';
 import { MdFastfood } from "react-icons/md";
+import sinTaccLogo from '../../assets/img/sin-tacc-seeklogo.webp';
 import './menuCard.css';
 
 // 🍽️ Configuración de iconos y descripciones por defecto para Groove
@@ -37,11 +38,18 @@ const getMenuIcon = (menuName) => {
 
   const name = normalizeMenuName(menuName);
 
+  const sinTaccIcon = <img src={sinTaccLogo} className="menu-icon-img" alt="Sin TACC" />;
+
   const iconByExactName = {
-    'gluten free': <FaLeaf className="menu-icon" />,
+    'gluten free': sinTaccIcon,
+    'sin tacc': sinTaccIcon,
     cena: <FaUtensils className="menu-icon" />,
+    'cena y tapeos': <FaUtensils className="menu-icon" />,
     'nuestros cocteles': <FaCocktail className="menu-icon" />,
-    cafeteria: <FaCoffee className="menu-icon" />
+    cocteleria: <FaCocktail className="menu-icon" />,
+    'gintoneria y vermouths': <FaCocktail className="menu-icon" />,
+    cafeteria: <FaCoffee className="menu-icon" />,
+    meriendas: <FaCoffee className="menu-icon" />
   };
 
   if (iconByExactName[name]) {
@@ -49,11 +57,14 @@ const getMenuIcon = (menuName) => {
   }
   
   // Mapear iconos basados en palabras clave en el nombre
-  if (name.includes('cafe') || name.includes('desayuno') || name.includes('breakfast')) {
+  if (name.includes('cafe') || name.includes('desayuno') || name.includes('breakfast') || name.includes('merienda')) {
     return <FaCoffee className="menu-icon" />;
   }
-  if (name.includes('bebida') || name.includes('cocteleria') || name.includes('cocktail') || name.includes('bar')) {
+  if (name.includes('bebida') || name.includes('cocteleria') || name.includes('cocktail') || name.includes('bar') || name.includes('gin') || name.includes('vermouth')) {
     return <FaCocktail className="menu-icon" />;
+  }
+  if (name.includes('tapeo') || name.includes('cena')) {
+    return <FaUtensils className="menu-icon" />;
   }
   if (name.includes('pizza')) {
     return <FaPizzaSlice className="menu-icon" />;

@@ -8,7 +8,7 @@
   border-radius: 1.5rem; 
   width: 100%; 
   max-width: 300px;
-  min-height: 240px; 
+  min-height: 0; 
   margin: 0 auto; 
   color: var(--color-text); 
   display: flex; 
@@ -16,7 +16,7 @@
   justify-content: space-between;
   text-align: center;
   box-sizing: border-box;
-  align-items: center; /* Center content horizontally */
+  align-items: center;
 }
 
 .menu-card--priority {
@@ -107,6 +107,13 @@ body[data-mode='day'] .menu-card p {
 .menu-icon {
   font-size: 3rem; /* Increase icon size */
   margin-bottom: 1rem; /* Add spacing below the icon */
+}
+
+.menu-icon-img {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  margin-bottom: 1rem;
 }
 
 /* Make the whole card act like a button */

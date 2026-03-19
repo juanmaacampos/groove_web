@@ -5,8 +5,8 @@ import { useGrooveMenus } from '../../utils/menuMapper.js';
 import './menuSlider.css';
 
 const PRIORITY_TITLES = {
-  day: ['Cafeteria', 'Gluten Free'],
-  bar: ['Cena', 'Nuestros Cocteles']
+  day: ['Meriendas', 'Sin Tacc'],
+  bar: ['Cena y Tapeos', 'Cocteleria', 'Gintoneria Y Vermouths']
 };
 
 const normalizeMenuTitle = (value = '') =>
@@ -26,17 +26,26 @@ export const MenuSlider = ({ onSelect, onSlideChange, mode = 'bar' }) => {
   const orderedKeys = useMemo(() => {
     if (keys.length === 0) return [];
 
-    const normalizedToKey = new Map();
-    keys.forEach((key) => {
-      const menuTitle = grooveMenus[key]?.title || key;
-      normalizedToKey.set(normalizeMenuTitle(menuTitle), key);
-    });
+    const normalizedPriorities = priorityTitles.map(normalizeMenuTitle);
+
+    const isPriorityMenu = (menuTitle) => {
+      const normalizedTitle = normalizeMenuTitle(menuTitle);
+      return normalizedPriorities.some(
+        (pt) => normalizedTitle.includes(pt) || pt.includes(normalizedTitle)
+      );
+    };
 
     const prioritized = [];
     const prioritizedSet = new Set();
-    priorityTitles.forEach((title) => {
-      const matchedKey = normalizedToKey.get(normalizeMenuTitle(title));
-      if (matchedKey) {
+
+    // Maintain the order defined in PRIORITY_TITLES
+    normalizedPriorities.forEach((normalizedPt) => {
+      const matchedKey = keys.find((key) => {
+        const menuTitle = grooveMenus[key]?.title || key;
+        const normalizedTitle = normalizeMenuTitle(menuTitle);
+        return normalizedTitle.includes(normalizedPt) || normalizedPt.includes(normalizedTitle);
+      });
+      if (matchedKey && !prioritizedSet.has(matchedKey)) {
         prioritized.push(matchedKey);
         prioritizedSet.add(matchedKey);
       }
@@ -293,7 +302,10 @@ export const MenuSlider = ({ onSelect, onSlideChange, mode = 'bar' }) => {
           const menuTitle = grooveMenus[key]?.title || key;
           const isPriority = priorityTitles
             .map(normalizeMenuTitle)
-            .includes(normalizeMenuTitle(menuTitle));
+            .some((pt) => {
+              const normalizedTitle = normalizeMenuTitle(menuTitle);
+              return normalizedTitle.includes(pt) || pt.includes(normalizedTitle);
+            });
 
           return (
             <div

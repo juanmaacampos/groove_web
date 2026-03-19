@@ -170,10 +170,10 @@ const BodyAds = () => {
     <section 
       id="nosotros" 
       ref={sectionRef} 
-      className={`body-ads ${announcements.length === 0 ? 'no-announcements' : ''}`} 
+      className={`highlights-grid ${announcements.length === 0 ? 'empty-state' : ''}`} 
       aria-label="Conocé más sobre nosotros"
     >
-      <div className="body-ads__inner">
+      <div className="highlights-grid__inner">
         <div className="stack">
           {/* Anuncios de Firebase dinámicos - Mostrar todos */}
           {announcements.length > 0 && (() => {
@@ -259,7 +259,7 @@ const BodyAds = () => {
           {/* Indicador de carga */}
           {loading && (
             <div className="stack-item is-first">
-              <div className="announcements-loading">
+              <div className="grid-loading">
                 <div className="loading-spinner"></div>
               </div>
             </div>
