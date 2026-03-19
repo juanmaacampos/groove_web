@@ -10,7 +10,6 @@ import EventReservation from './webSections/EventReservation/EventReservation.js
 import FirebaseProvider from './firebase/FirebaseProvider.jsx';
 import FeaturedModal from './components/FeaturedModal/FeaturedModal.jsx';
 import TopButton from './components/topButton/TopButton.jsx';
-import ModeTestControl from './components/ModeTestControl/ModeTestControl.jsx';
 import { useFeaturedModal } from './hooks/useFeaturedModal.js';
 import { useAnnouncementsOptimized } from './firebase/useMenuOptimized.js';
 import LandingModal from './components/LandingModal/LandingModal.jsx';
@@ -54,7 +53,6 @@ function App() {
 
 function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, manualClickKey }) {
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [manualMode, setManualMode] = useState(null);
   const { menuSDK } = useFirebase();
   const { business } = useBusinessInfo(menuSDK);
 
@@ -63,21 +61,7 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
     return () => clearInterval(intervalId);
   }, []);
 
-  const automaticMode = useMemo(() => getVisualModeFromTime(currentTime), [currentTime]);
-  const visualMode = manualMode || automaticMode;
-
-  const handleModeSwitch = () => {
-    setManualMode((prevMode) => {
-      if (!prevMode) {
-        return automaticMode === 'day' ? 'bar' : 'day';
-      }
-      return prevMode === 'day' ? 'bar' : 'day';
-    });
-  };
-
-  const clearManualMode = () => {
-    setManualMode(null);
-  };
+  const visualMode = useMemo(() => getVisualModeFromTime(currentTime), [currentTime]);
 
   useEffect(() => {
     document.body.setAttribute('data-mode', visualMode);
@@ -135,14 +119,6 @@ function AppContent({ onSelectMenu, selectedMenu, onSlideChange, activeSlide, ma
 
       {/* Scroll to top button */}
       <TopButton />
-
-      {/* Control temporal de testing visual (no va en producción final) */}
-      <ModeTestControl
-        visualMode={visualMode}
-        onToggleMode={handleModeSwitch}
-        dayStartHour={DAY_MODE_START_HOUR}
-        dayEndHour={DAY_MODE_END_HOUR}
-      />
 
     </div>
   );

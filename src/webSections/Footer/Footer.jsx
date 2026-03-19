@@ -1,5 +1,6 @@
 import React from 'react';
 import GrooveLogo from '../../assets/img/Groove_logo.svg';
+import JMCDEVLogo from '../../assets/img/jmcdev_logo.webp';
 import './footer.css';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { INSTAGRAM_CAFE } from '../../config/socials.js';
@@ -40,7 +41,20 @@ const Footer = () => {
         </nav>
 
         <div className="footer-meta">
-          <strong><small className="legal">© {year} Creado por <a href="https://jmcdev.site" target="_blank" rel="noreferrer noopener">JMCDEV</a>. Todos los derechos reservados.</small></strong>
+          <a
+            className="footer-credit"
+            href="https://jmcdev.site"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="JMCDEV"
+          >
+            <img src={JMCDEVLogo} alt="JMCDEV" className="footer-credit-logo" />
+          </a>
+          <strong>
+            <small className="legal">
+              © {year} Web creada por <a href="https://jmcdev.site" target="_blank" rel="noreferrer noopener">JMCDEV</a>. Todos los derechos reservados.
+            </small>
+          </strong>
         </div>
       </div>
     </footer>
