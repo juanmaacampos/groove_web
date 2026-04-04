@@ -15,6 +15,7 @@ export function useMenuCategoriesLazy(menuSDK, menuId) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const loadedCategories = useRef(new Set());
+  const loadedSearchIndexes = useRef(new Set());
 
   // Función para cargar solo las categorías (sin items)
   const loadCategoryNames = useCallback(async () => {
@@ -44,6 +45,7 @@ export function useMenuCategoriesLazy(menuSDK, menuId) {
 
       setCategories(emptyCategoriesStructure);
       loadedCategories.current.clear();
+      loadedSearchIndexes.current.clear();
     } catch (err) {
       console.error('❌ Error loading category names:', err);
       setError(err.message);
@@ -113,6 +115,30 @@ export function useMenuCategoriesLazy(menuSDK, menuId) {
     }
   }, [menuSDK, menuId]);
 
+  // Carga solo nombre+descripción de los items de una categoría (índice de búsqueda ligero)
+  const loadCategorySearchIndex = useCallback(async (categoryId) => {
+    if (!menuSDK || !menuId || !categoryId) return;
+    // Si ya están cargados los items completos o el índice ya existe, no hacer nada
+    if (loadedCategories.current.has(categoryId)) return;
+    if (loadedSearchIndexes.current.has(categoryId)) return;
+
+    // Marcar inmediatamente para evitar llamadas duplicadas
+    loadedSearchIndexes.current.add(categoryId);
+
+    try {
+      const nameItems = await menuSDK.getCategoryItemNamesOnly(menuId, categoryId);
+      setCategories(prev => prev.map(cat =>
+        cat.id === categoryId
+          ? { ...cat, searchIndex: nameItems }
+          : cat
+      ));
+    } catch (err) {
+      // Permitir reintento si falla
+      loadedSearchIndexes.current.delete(categoryId);
+      console.error(`❌ Error loading search index for category ${categoryId}:`, err);
+    }
+  }, [menuSDK, menuId]);
+
   // Cargar nombres de categorías al inicio
   useEffect(() => {
     loadCategoryNames();
@@ -123,6 +149,7 @@ export function useMenuCategoriesLazy(menuSDK, menuId) {
     loading,
     error,
     loadCategoryItems,
+    loadCategorySearchIndex,
     refreshCategories: loadCategoryNames
   };
 }

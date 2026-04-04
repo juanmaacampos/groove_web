@@ -216,7 +216,32 @@ export class MenuSDK {
   }
 
   /**
-   * 📦 Obtiene solo los items de una categoría específica
+   * � Obtiene solo nombre y descripción de los items de una categoría (para búsqueda)
+   * Reutiliza el caché de getCategoryItems para no duplicar lecturas de Firestore
+   */
+  async getCategoryItemNamesOnly(menuId, categoryId) {
+    const cacheKey = firebaseCache.generateKey('category-items', `${menuId}-${categoryId}`);
+    let rawItems = firebaseCache.get(cacheKey);
+
+    if (!rawItems) {
+      const itemsRef = collection(this.db, 'businesses', this.businessId, 'menus', menuId, 'categories', categoryId, 'items');
+      const itemsSnapshot = await getDocs(itemsRef);
+      rawItems = itemsSnapshot.docs
+        .map(itemDoc => ({ id: itemDoc.id, ...itemDoc.data() }))
+        .filter(item => !item.isHidden);
+      // Guardar en el mismo caché que getCategoryItems para no re-fetchear
+      firebaseCache.set(cacheKey, rawItems, 10 * 60 * 1000);
+    }
+
+    return rawItems.map(item => ({
+      id: item.id,
+      name: item.name || '',
+      description: item.description || ''
+    }));
+  }
+
+  /**
+   * �📦 Obtiene solo los items de una categoría específica
    * OPTIMIZACIÓN: Para lazy loading - carga items bajo demanda
    */
   async getCategoryItems(menuId, categoryId) {
@@ -342,12 +367,14 @@ export class MenuSDK {
     try {
       const menu = await this.getFullMenu();
       const results = [];
-      const term = searchTerm.toLowerCase();
+      const normalizeText = (str) =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const term = normalizeText(searchTerm);
       
       menu.forEach(category => {
         category.items.forEach(item => {
-          const nameMatch = item.name.toLowerCase().includes(term);
-          const descMatch = item.description && item.description.toLowerCase().includes(term);
+          const nameMatch = normalizeText(item.name).includes(term);
+          const descMatch = item.description && normalizeText(item.description).includes(term);
           
           if (nameMatch || descMatch) {
             results.push({

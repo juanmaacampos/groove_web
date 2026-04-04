@@ -12,19 +12,46 @@ import './menuDropdownOptimized.css';
  * Carga categorías primero, items bajo demanda al expandir
  */
 
+// Normaliza texto: minúsculas + sin acentos ni diacríticos
+const normalizeText = (str) =>
+  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+// Puntúa la relevancia de un texto frente al término de búsqueda (mayor = más relevante)
+const scoreText = (text, search) => {
+  if (!text) return 0;
+  const norm = normalizeText(text);
+  if (norm === search) return 4;          // coincidencia exacta
+  if (norm.startsWith(search)) return 3;  // empieza con el término
+  if (norm.includes(` ${search}`)) return 2; // palabra entera dentro
+  if (norm.includes(search)) return 1;    // subcadena
+  return 0;
+};
+
 // Componente de categoría optimizada con lazy loading
 const LazyCategory = ({ category, isOpen, isLoading, onToggle, onImageClick, searchTerm }) => {
-  const normalizedSearch = searchTerm.trim().toLowerCase();
-  const categoryNameMatches = normalizedSearch && category.name?.toLowerCase().includes(normalizedSearch);
+  const normalizedSearch = normalizeText(searchTerm.trim());
+  // Solo se considera "coincidencia fuerte" si el nombre de la categoría empieza con el término o es exacto
+  const categoryNameMatches = normalizedSearch && scoreText(category.name ?? '', normalizedSearch) >= 3;
   const filteredItems = useMemo(() => {
     if (!normalizedSearch) return category.items;
-    // If the category name itself matches the search, show all its items
-    if (categoryNameMatches) return category.items;
-    return category.items.filter((item) =>
-      [item.name, item.desc, item.price]
-        .filter(Boolean)
-        .some((field) => field.toLowerCase().includes(normalizedSearch))
-    );
+    // If the category name itself matches the search, show all its items sorted by name score
+    const pool = categoryNameMatches
+      ? category.items
+      : category.items.filter((item) =>
+          [item.name, item.desc, item.price]
+            .filter(Boolean)
+            .some((field) => normalizeText(field).includes(normalizedSearch))
+        );
+    // Sort by relevance: name match > desc match > price match
+    return [...pool].sort((a, b) => {
+      const scoreA = scoreText(a.name, normalizedSearch) * 10
+        + scoreText(a.desc, normalizedSearch) * 3
+        + scoreText(a.price, normalizedSearch);
+      const scoreB = scoreText(b.name, normalizedSearch) * 10
+        + scoreText(b.desc, normalizedSearch) * 3
+        + scoreText(b.price, normalizedSearch);
+      return scoreB - scoreA;
+    });
   }, [category.items, normalizedSearch, categoryNameMatches]);
 
   const handleToggle = () => {
@@ -156,7 +183,8 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
     categories, 
     loading: categoriesLoading, 
     error: categoriesError,
-    loadCategoryItems
+    loadCategoryItems,
+    loadCategorySearchIndex
   } = useMenuCategoriesLazy(menuSDK, menuType);
   
   // Hook para gestión inteligente de expansión
@@ -174,18 +202,25 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const visibleCategories = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const normalizedSearch = normalizeText(searchTerm.trim());
     if (!normalizedSearch) return categories;
 
-    return categories.filter((category) => {
-      const categoryMatch = category.name?.toLowerCase().includes(normalizedSearch);
-      const itemMatch = category.items?.some((item) =>
-        [item.name, item.desc, item.price]
-          .filter(Boolean)
-          .some((field) => field.toLowerCase().includes(normalizedSearch))
-      );
-      return categoryMatch || itemMatch;
-    });
+    const scored = categories
+      .map((category) => {
+        const catScore = scoreText(category.name, normalizedSearch);
+        // Usar items completos si ya cargó, sino el índice ligero de búsqueda
+        const searchData = category.itemsLoaded ? category.items : (category.searchIndex || []);
+        const itemScore = searchData.reduce((best, item) => {
+          const s = scoreText(item.name, normalizedSearch) * 10
+            + scoreText(item.desc ?? item.description, normalizedSearch) * 3;
+          return Math.max(best, s);
+        }, 0);
+        return { category, total: catScore * 20 + itemScore };
+      })
+      .filter(({ total }) => total > 0);
+
+    scored.sort((a, b) => b.total - a.total);
+    return scored.map(({ category }) => category);
   }, [categories, searchTerm]);
 
   // Información del menú
@@ -203,6 +238,20 @@ export const MenuDropdownOptimized = ({ menuType, autoScroll = true }) => {
     setHasScrolledToMenu(false); // Reset scroll flag when menu changes
     setSearchTerm('');
   }, [menuType]);
+
+  // Cuando el usuario escribe en el buscador, precargar solo el índice de búsqueda
+  // (nombre + descripción) de las categorías no cargadas, con debounce para no saturar
+  useEffect(() => {
+    if (!searchTerm.trim() || !categories.length) return;
+    const timer = setTimeout(() => {
+      categories.forEach((cat) => {
+        if (!cat.itemsLoaded) {
+          loadCategorySearchIndex(cat.id);
+        }
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, categories, loadCategorySearchIndex]);
 
   // Auto-scroll cuando se cargan las categorías (solo la primera vez para cada menú y si autoScroll está habilitado)
   useEffect(() => {
