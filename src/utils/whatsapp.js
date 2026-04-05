@@ -46,6 +46,7 @@ export function buildEventReservationMessage({
   phone,
   eventType,
   eventDate,
+  eventTime,
   guests,
   message,
 }) {
@@ -58,6 +59,7 @@ export function buildEventReservationMessage({
     `Nombre: ${fullName || 'No informado'}`,
     `WhatsApp: ${contactLink || phone || 'No informado'}`,
     `Fecha estimada: ${formatEventDate(eventDate)}`,
+    ...(isTableReservation && eventTime ? [`Hora de la reserva: ${eventTime}`] : []),
     `Cantidad de personas: ${guests || 'No informada'}`,
   ];
 

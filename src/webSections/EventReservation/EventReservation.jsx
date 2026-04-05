@@ -13,6 +13,7 @@ const RESERVATION_MODES = {
 const EventReservation = ({ visualMode }) => {
   const [reservationMode, setReservationMode] = useState('table');
   const [guestCount, setGuestCount] = useState('');
+  const [reservationTime, setReservationTime] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const { contactPhone, whatsAppHref, isInitialized } = useBusinessContact();
 
@@ -52,6 +53,7 @@ const EventReservation = ({ visualMode }) => {
       phone: formData.get('phone')?.toString().trim(),
       eventType: isTableReservation ? '' : formData.get('eventType')?.toString().trim(),
       eventDate: formData.get('eventDate')?.toString().trim(),
+      eventTime: isTableReservation ? formData.get('eventTime')?.toString().trim() : '',
       guests: formData.get('guests')?.toString().trim(),
       message: formData.get('message')?.toString().trim(),
     };
@@ -119,6 +121,20 @@ const EventReservation = ({ visualMode }) => {
                   Fecha estimada
                   <input type="date" name="eventDate" required enterKeyHint="next" />
                 </label>
+
+                {isTableReservation && (
+                  <label>
+                    Hora de la reserva
+                    <input
+                      type="time"
+                      name="eventTime"
+                      required
+                      value={reservationTime}
+                      onChange={(e) => setReservationTime(e.target.value)}
+                      enterKeyHint="next"
+                    />
+                  </label>
+                )}
 
                 <label>
                   Cantidad de personas
