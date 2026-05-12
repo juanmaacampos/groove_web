@@ -146,6 +146,11 @@
 .review-card__text {
   margin: 0 0 .75rem;
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
 }
 
 .review-card__author {

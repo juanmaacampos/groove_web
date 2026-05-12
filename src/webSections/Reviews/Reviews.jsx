@@ -26,8 +26,8 @@ function timeAgo(dateStr) {
   if (hours < 24)  return hours === 1 ? 'hace 1 hora' : `hace ${hours} horas`;
   if (days < 7)    return days === 1 ? 'hace 1 día' : `hace ${days} días`;
   if (weeks < 5)   return weeks === 1 ? 'hace 1 semana' : `hace ${weeks} semanas`;
-  if (months < 12) return months === 1 ? 'hace 1 mes' : `hace ${months} meses`;
-  return years === 1 ? 'hace 1 año' : `hace ${years} años`;
+  if (days < 365)  return months === 1 ? 'hace 1 mes' : `hace ${months} meses`;
+  return years === 1 ? 'hace 1 año' : `hace ${years > 0 ? years : 1} años`;
 }
 
 const REVIEWS = [
@@ -37,23 +37,95 @@ const REVIEWS = [
     avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjV2tFa4IPvjnvraOHyntkrpLLZQyZPEai1Z0VFUlw6eqzhDuapyYA=w90-h90-p-rp-mo-ba4-br100',
     rating: 5,
     text: 'El lugar es muy bonito, son super amables y la comida es exquisita. Súper recomendable',
-    date: '2025-11-17'
+    date: '2025-12-13'
   },
   {
     id: 2,
+    author: 'Claudia Amitrano',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjUx3L9U2BAFwgEa7QaVVroxXJ3HD5IP6rVrLh0uoWTIOrpK8ZgtNw=w90-h90-p-rp-mo-ba6-br100',
+    rating: 5,
+    text: 'Lindo lugar, agradable y tranquilo. Excelentes los tostados de pan árabe (los recomiendo), y los sandwiches caseros, increíbles!!!! Presentación, elaboración, productos, sabor, todo de primera.\nMuy buena variedad de postres.\nEl patio es una belleza ideal para merendar o cenar. Muy buena la atención.\nPrecios acordes.',
+    date: '2025-05-13'
+  },
+  {
+    id: 3,
     author: 'Armando Deri',
     avatar: 'https://lh3.googleusercontent.com/a/ACg8ocLJlMfZE4mwW0ubsu_6tnIsd8HOJ4ZVJwwRDIVSlBeYiQFNfA=w90-h90-p-rp-mo-br100',
     rating: 5,
     text: 'Gran variedad y excelente la comida. Muy recomendable. Gracias x la atención y amabilidad',
-    date: '2026-03-10'
+    date: '2026-03-13'
   },
   {
-    id: 3,
+    id: 4,
     author: 'Eliana Charcuetti',
     avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjU2RrPOLveKBI6-9UYTtRKSCYSDoiPJZd7uCcvjabkdl2k2E3n1ZQ=w90-h90-p-rp-mo-br100',
     rating: 5,
     text: 'Hermoso el patio, muy buena atención y el smottie on the beach riquisimooo. Súper recomendable',
-    date: '2025-11-17'
+    date: '2025-11-13'
+  },
+  {
+    id: 5,
+    author: 'Agustina Belen Perez',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjVYGWF8OLNWIlGVWjKaynsiF6RzsAWkk7oK81Xki7YnCpC_xWBz_g=w90-h90-p-rp-mo-br100',
+    rating: 5,
+    text: 'Pocos lugares como este, amplia variedad sin tacc y la verdad muy rico. Ambiente muy lindo, super atentas las chicas que nos atendieron! Volvería sin dudarlo.',
+    date: '2026-02-13'
+  },
+  {
+    id: 6,
+    author: 'Martin Cordoba',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjXL4L08HwcIzwfP78rBA_AedAhKBvQa2gFQMqcl6y4UlCekey72=w90-h90-p-rp-mo-ba3-br100',
+    rating: 5,
+    text: 'Excelente lugar, todo muy lindo y la comida excelente súper casera. Para volver y volver! Tienen un jardín con mesas . Excelente la verdad. Felicitaciones',
+    date: '2026-02-13'
+  },
+  {
+    id: 7,
+    author: 'Natalia Valotta',
+    avatar: 'https://lh3.googleusercontent.com/a/ACg8ocLX3uD_Epp3qAx1oz127iB06-eZ5zsob47isvT6iwPpx-fO2A=w90-h90-p-rp-mo-ba4-br100',
+    rating: 5,
+    text: 'Espectacular la merienda y la cena!!! Hoy fui por primera vez y nos encantó. Lo que sí , hacía mucho frío adentro!!!!',
+    date: '2025-07-13'
+  },
+  {
+    id: 8,
+    author: 'ANDY Soto',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjV-InMiJ8wvdCarjI4njuj7FKTd6qwY4Vd_GQvhqZkY6OeFoIAbQQ=w90-h90-p-rp-mo-ba4-br100',
+    rating: 5,
+    text: 'Un buen lugar para pasar un rato acompañado, tomando un cóctel 🍹🍸 y picando la tabla fiambre con pollo empanizado y ni hablar de los tacos 🌮 muy buenos, con una atención impecable y muy atentos por parte de su personal',
+    date: '2025-05-13'
+  },
+  {
+    id: 9,
+    author: 'Veronica Zaffalon',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjXV4UoyXfgv3hSHfq74nbMbrNZla4xZsK-ugYa-1CppEeQWu6wNTQ=w90-h90-p-rp-mo-ba5-br100',
+    rating: 5,
+    text: 'Muy buem lugar tiene todos los espacios de acuerdo a tu necesidad un café íntimo ,una salida con amigas y una despedida ,fantástico .Rico y a un precio razonable para Campana .',
+    date: '2026-02-13'
+  },
+  {
+    id: 10,
+    author: 'karina Loreley Vera',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjV3WDsS24EqSLTjGr7P5_8b-t2UX4lmCPKZsnePxxQ9bAxFG-Cijw=w90-h90-p-rp-mo-br100',
+    rating: 5,
+    text: 'Hermoso lugar para disfrutar de una noche con amigos, pasarla genial y con un buen servicio!! Exquisito todo. Virginia gracias por tu atención!!!',
+    date: '2025-12-13'
+  },
+  {
+    id: 11,
+    author: 'Mapu Garcia',
+    avatar: 'https://lh3.googleusercontent.com/a-/ALV-UjVfMPCro6grX-QQN9y9KN_iDZ787UFT_3NqKcy2j-v__oYaq7E=w90-h90-p-rp-mo-ba3-br100',
+    rating: 5,
+    text: 'ufff... las rabas... y los batoncitos.. la rompen. El lugar esta muuuuuuuuy buenoooooooooooo!!!!',
+    date: '2025-05-13'
+  },
+  {
+    id: 12,
+    author: 'Claudia Deri',
+    avatar: 'https://lh3.googleusercontent.com/a/ACg8ocKfMUTR26LR-g--wytGAxn-ttSGc4p9Q6IJOKkoNEh5Bh6NLg=w90-h90-p-rp-mo-br100',
+    rating: 5,
+    text: 'Excelente comida, atención y el lugarar muy calido.',
+    date: '2026-03-13'
   }
 ];
 
@@ -91,6 +163,11 @@ function ReviewAvatar({ src, name }) {
 }
 
 const Reviews = ({ visualMode }) => {
+  // Tomar 3 reseñas aleatorias al montar el componente para no armar carrusel
+  const [displayReviews] = useState(() => {
+    return [...REVIEWS].sort(() => 0.5 - Math.random()).slice(0, 3);
+  });
+
   return (
     <section
       id="resenas"
@@ -105,7 +182,7 @@ const Reviews = ({ visualMode }) => {
         </div>
 
         <div className="reviews__grid">
-          {REVIEWS.map((review) => (
+          {displayReviews.map((review) => (
             <article key={review.id} className="review-card">
               <header className="review-card__header">
                 <ReviewAvatar src={review.avatar} name={review.author} />
