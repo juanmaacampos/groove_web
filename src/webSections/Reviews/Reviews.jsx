@@ -2,16 +2,6 @@ import React, { useState } from 'react';
 import { FaStar, FaGoogle } from 'react-icons/fa';
 import './reviews.css';
 
-// ─────────────────────────────────────────────────────────────
-// CÓMO ACTUALIZAR LAS RESEÑAS:
-//  1. Abrí Google Maps → buscá "Groove Café Campana"
-//  2. Entrá a las reseñas y elegí las mejores de 5 estrellas
-//  3. Para la foto: clic derecho en el avatar → "Copiar dirección de imagen"
-//     y pegala en `avatar`. Sin foto → dejá null (se muestran iniciales).
-//  4. En `date` poner la fecha real de la reseña — el tiempo relativo
-//     se calcula solo y se actualiza con el paso del tiempo.
-// ─────────────────────────────────────────────────────────────
-
 // Calcula tiempo relativo en español a partir de una fecha
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -129,8 +119,6 @@ const REVIEWS = [
   }
 ];
 
-// Link al perfil de Google Maps del local — reemplazá con el link real
-// Para obtenerlo: Google Maps → Groove Café → "Compartir" → "Copiar link"
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/search/Groove+Café+Av.+Int.+Jorge+Ruben+Varela+512+Campana';
 
 // Avatar con fallback a iniciales cuando no hay foto disponible
