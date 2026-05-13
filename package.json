@@ -29,5 +29,13 @@
     "globals": "^16.3.0",
     "terser": "^5.43.1",
     "vite": "^7.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "@swc/core",
+      "esbuild",
+      "protobufjs"
+    ]
   }
 }
